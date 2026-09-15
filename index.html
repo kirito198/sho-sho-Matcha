@@ -154,7 +154,7 @@
       text-decoration: underline;
     }
 
-    /* Order popup */
+    /* Popup */
     .order-modal {
       display: none;
       position: fixed;
@@ -223,8 +223,43 @@
     }
 
     #order-summary {
-      min-height: 130px;
+      min-height: 125px;
       white-space: pre-line;
+    }
+
+    .cart-items {
+      margin: 10px 0 15px;
+    }
+
+    .cart-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid #eadbd2;
+      color: #5a3c2c;
+      font-size: 14px;
+    }
+
+    .cart-item-info {
+      flex: 1;
+      line-height: 1.5;
+    }
+
+    .remove-item {
+      width: auto;
+      padding: 7px 11px;
+      border: none;
+      border-radius: 8px;
+      background: #f3d4df;
+      color: #a83261;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .remove-item:hover {
+      background: #eebdce;
     }
 
     .payment-note {
@@ -398,7 +433,11 @@
         action="/success.html"
         class="order-form"
       >
-        <input type="hidden" name="form-name" value="orders">
+        <input
+          type="hidden"
+          name="form-name"
+          value="orders"
+        >
 
         <label for="name">Name</label>
         <input
@@ -418,7 +457,14 @@
           required
         >
 
-        <label for="order-summary">Your Order</label>
+        <label>Your Order</label>
+
+        <div
+          id="cart-items"
+          class="cart-items"
+          aria-live="polite"
+        ></div>
+
         <textarea
           id="order-summary"
           name="order-summary"
@@ -482,6 +528,7 @@
 
     const modal = document.getElementById("order-modal");
     const cartCount = document.getElementById("cart-count");
+    const cartItemsContainer = document.getElementById("cart-items");
     const orderSummary = document.getElementById("order-summary");
     const totalInput = document.getElementById("total");
 
@@ -510,19 +557,65 @@
 
       updateCartCount();
 
+      if (modal.classList.contains("show")) {
+        renderCart();
+        updateOrderSummary();
+      }
+
       alert(name + " added to cart");
     }
 
-    function openCart() {
-      if (cart.length === 0) {
-        alert("Your cart is empty.");
-        return;
-      }
+    function removeFromCart(index) {
+      cart.splice(index, 1);
 
+      updateCartCount();
+      renderCart();
+      updateOrderSummary();
+
+      if (cart.length === 0) {
+        closeOrderForm();
+      }
+    }
+
+    function renderCart() {
+      cartItemsContainer.innerHTML = "";
+
+      cart.forEach(function(item, index) {
+        const itemTotal = item.price * item.quantity;
+
+        const itemElement = document.createElement("div");
+        itemElement.className = "cart-item";
+
+        const itemInfo = document.createElement("div");
+        itemInfo.className = "cart-item-info";
+
+        itemInfo.innerHTML = `
+          <strong>${item.name}</strong><br>
+          Quantity: ${item.quantity} |
+          ${itemTotal.toFixed(1)} BD
+        `;
+
+        const removeButton = document.createElement("button");
+        removeButton.type = "button";
+        removeButton.className = "remove-item";
+        removeButton.textContent = "Remove";
+
+        removeButton.addEventListener("click", function() {
+          removeFromCart(index);
+        });
+
+        itemElement.appendChild(itemInfo);
+        itemElement.appendChild(removeButton);
+        cartItemsContainer.appendChild(itemElement);
+      });
+    }
+
+    function updateOrderSummary() {
       let total = 0;
 
       const summary = cart.map(function(item) {
         const itemTotal = item.price * item.quantity;
+
         total += itemTotal;
 
         return (
@@ -542,6 +635,16 @@
         " BD";
 
       totalInput.value = total.toFixed(1) + " BD";
+    }
+
+    function openCart() {
+      if (cart.length === 0) {
+        alert("Your cart is empty.");
+        return;
+      }
+
+      renderCart();
+      updateOrderSummary();
 
       modal.classList.add("show");
       document.body.classList.add("no-scroll");
