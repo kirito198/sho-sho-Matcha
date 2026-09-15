@@ -451,7 +451,6 @@
           <p class="empty-cart">Your cart is empty.</p>
         </div>
 
-        <!-- سيتم وضع تفاصيل المنتجات والأسماء هنا تلقائياً -->
         <textarea
           id="orderDetails"
           name="order-details"
@@ -460,7 +459,7 @@
 
         <label for="pickup-time">Pickup Time</label>
         <input
-          type="datetime-local"
+          type="time"
           id="pickup-time"
           name="pickup-time"
           required
@@ -504,6 +503,10 @@
   <script>
     let cart = [];
 
+    /*
+      إضافة المنتج إلى السلة فقط.
+      لا يتم فتح نافذة الطلب تلقائيًا.
+    */
     function addToCart(productName, price) {
       cart.push({
         product: productName,
@@ -512,7 +515,6 @@
       });
 
       updateCart();
-      openCart();
     }
 
     function updateCart() {
@@ -545,18 +547,28 @@
             type="text"
             placeholder="Name of the person"
             value="${item.personName}"
-            oninput="updatePersonName(${index}, this.value)"
             required
           >
 
           <button
             type="button"
             class="remove-item"
-            onclick="removeFromCart(${index})"
           >
             Remove
           </button>
         `;
+
+        const nameInput = itemElement.querySelector("input");
+
+        nameInput.addEventListener("input", function() {
+          updatePersonName(index, this.value);
+        });
+
+        const removeButton = itemElement.querySelector(".remove-item");
+
+        removeButton.addEventListener("click", function() {
+          removeFromCart(index);
+        });
 
         cartItems.appendChild(itemElement);
       });
@@ -578,7 +590,7 @@
       const orderDetails = document.getElementById("orderDetails");
 
       const details = cart.map(function(item, index) {
-        return `${index + 1}. ${item.product} - ${item.price} - Name: ${item.personName}`;
+        return ${index + 1}. ${item.product} - ${item.price} - Name: ${item.personName};
       }).join("\n");
 
       orderDetails.value = details;
