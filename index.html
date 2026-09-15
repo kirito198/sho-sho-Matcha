@@ -25,13 +25,9 @@
       min-height: 100vh;
     }
 
-    body.no-scroll {
-      overflow: hidden;
-    }
-
     .hero {
       text-align: center;
-      padding: 35px 20px 20px;
+      padding: 35px 20px 25px;
     }
 
     .logo {
@@ -53,19 +49,13 @@
       color: #7a5a48;
     }
 
-    .cart-bar {
-      display: flex;
-      justify-content: center;
-      margin: 5px 20px 25px;
-    }
-
     .products {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 22px;
       width: 90%;
       max-width: 900px;
-      margin: 20px auto 45px;
+      margin: 20px auto 30px;
     }
 
     .card {
@@ -133,6 +123,11 @@
       outline-offset: 3px;
     }
 
+    .cart-container {
+      text-align: center;
+      margin: 25px auto 35px;
+    }
+
     .cart-btn {
       max-width: 220px;
     }
@@ -154,7 +149,7 @@
       text-decoration: underline;
     }
 
-    /* Popup */
+    /* Order popup */
     .order-modal {
       display: none;
       position: fixed;
@@ -222,46 +217,6 @@
       resize: vertical;
     }
 
-    #order-summary {
-      min-height: 125px;
-      white-space: pre-line;
-    }
-
-    .cart-items {
-      margin: 10px 0 15px;
-    }
-
-    .cart-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      padding: 10px 0;
-      border-bottom: 1px solid #eadbd2;
-      color: #5a3c2c;
-      font-size: 14px;
-    }
-
-    .cart-item-info {
-      flex: 1;
-      line-height: 1.5;
-    }
-
-    .remove-item {
-      width: auto;
-      padding: 7px 11px;
-      border: none;
-      border-radius: 8px;
-      background: #f3d4df;
-      color: #a83261;
-      font-size: 13px;
-      cursor: pointer;
-    }
-
-    .remove-item:hover {
-      background: #eebdce;
-    }
-
     .payment-note {
       margin: 18px 0;
       color: #7a5a48;
@@ -273,6 +228,47 @@
     .submit-btn {
       max-width: 100%;
       margin-top: 5px;
+    }
+
+    /* Cart items */
+    .cart-item {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      padding: 14px;
+      margin-bottom: 12px;
+      background: #fff;
+      border: 1px solid #decfc5;
+      border-radius: 12px;
+    }
+
+    .cart-item strong {
+      color: #5a3c2c;
+      line-height: 1.4;
+    }
+
+    .cart-item input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #decfc5;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .remove-item {
+      border: none;
+      background: #f3d5df;
+      color: #a83262;
+      padding: 8px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .empty-cart {
+      color: #7a5a48;
+      text-align: center;
+      padding: 10px;
     }
 
     @media (max-width: 600px) {
@@ -306,19 +302,10 @@
     <p class="subtitle">Delicious Homemade Matcha</p>
   </header>
 
-  <div class="cart-bar">
-    <button
-      class="btn cart-btn"
-      type="button"
-      id="open-cart-btn"
-    >
-      Cart (<span id="cart-count">0</span>)
-    </button>
-  </div>
-
   <main>
     <section class="products" aria-label="SHO SHO Products">
 
+      <!-- SHOSHO'S SECRET -->
       <article class="card">
         <img
           src="secret-matcha.png"
@@ -331,15 +318,15 @@
         <div class="price">2.5 BD</div>
 
         <button
-          class="btn add-to-cart"
+          class="btn"
           type="button"
-          data-name="SHOSHO'S SECRET"
-          data-price="2.5"
+          onclick="addToCart(&quot;SHOSHO'S SECRET&quot;, '2.5 BD')"
         >
           Add to Cart
         </button>
       </article>
 
+      <!-- OG MATCHA -->
       <article class="card">
         <img
           src="og-matcha.png"
@@ -352,15 +339,15 @@
         <div class="price">1.8 BD</div>
 
         <button
-          class="btn add-to-cart"
+          class="btn"
           type="button"
-          data-name="OG MATCHA"
-          data-price="1.8"
+          onclick="addToCart('OG MATCHA', '1.8 BD')"
         >
           Add to Cart
         </button>
       </article>
 
+      <!-- SHOSHO'S BREW -->
       <article class="card">
         <img
           src="shoshos-brew.png"
@@ -373,15 +360,15 @@
         <div class="price">1.8 BD</div>
 
         <button
-          class="btn add-to-cart"
+          class="btn"
           type="button"
-          data-name="SHOSHO'S BREW"
-          data-price="1.8"
+          onclick="addToCart(&quot;SHOSHO'S BREW&quot;, '1.8 BD')"
         >
           Add to Cart
         </button>
       </article>
 
+      <!-- ICED AMERICANO -->
       <article class="card">
         <img
           src="iced-americano.png"
@@ -394,37 +381,41 @@
         <div class="price">1 BD</div>
 
         <button
-          class="btn add-to-cart"
+          class="btn"
           type="button"
-          data-name="ICED AMERICANO"
-          data-price="1"
+          onclick="addToCart('ICED AMERICANO', '1 BD')"
         >
           Add to Cart
         </button>
       </article>
 
     </section>
+
+    <div class="cart-container">
+      <button
+        class="btn cart-btn"
+        type="button"
+        onclick="openCart()"
+      >
+        View Cart (<span id="cartCount">0</span>)
+      </button>
+    </div>
   </main>
 
-  <div
-    id="order-modal"
-    class="order-modal"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="order-title"
-  >
+  <!-- Order Form Popup -->
+  <div id="orderModal" class="order-modal">
     <div class="order-box">
 
       <button
         type="button"
         class="close-btn"
-        id="close-order-btn"
+        onclick="closeOrderForm()"
         aria-label="Close"
       >
         &times;
       </button>
 
-      <h2 id="order-title">Place Your Order</h2>
+      <h2>Place Your Order</h2>
 
       <form
         name="orders"
@@ -432,14 +423,11 @@
         data-netlify="true"
         action="/success.html"
         class="order-form"
+        id="orderForm"
       >
-        <input
-          type="hidden"
-          name="form-name"
-          value="orders"
-        >
+        <input type="hidden" name="form-name" value="orders">
 
-        <label for="name">Name</label>
+        <label for="name">Your Name</label>
         <input
           type="text"
           id="name"
@@ -459,32 +447,22 @@
 
         <label>Your Order</label>
 
-        <div
-          id="cart-items"
-          class="cart-items"
-          aria-live="polite"
-        ></div>
+        <div id="cartItems">
+          <p class="empty-cart">Your cart is empty.</p>
+        </div>
 
+        <!-- سيتم وضع تفاصيل المنتجات والأسماء هنا تلقائياً -->
         <textarea
-          id="order-summary"
-          name="order-summary"
-          readonly
-          required
+          id="orderDetails"
+          name="order-details"
+          hidden
         ></textarea>
-
-        <input
-          type="hidden"
-          id="total"
-          name="total"
-        >
 
         <label for="pickup-time">Pickup Time</label>
         <input
-          type="time"
+          type="datetime-local"
           id="pickup-time"
           name="pickup-time"
-          min="08:00"
-          max="22:00"
           required
         >
 
@@ -496,8 +474,8 @@
         ></textarea>
 
         <p class="payment-note">
-          After submitting your order, you will be redirected to Instagram.
-          Please message us there to receive payment details and confirm your order.
+          Please contact us through Instagram DM and send your payment receipt
+          to confirm your order.
         </p>
 
         <button
@@ -524,155 +502,122 @@
   </footer>
 
   <script>
-    const cart = [];
+    let cart = [];
 
-    const modal = document.getElementById("order-modal");
-    const cartCount = document.getElementById("cart-count");
-    const cartItemsContainer = document.getElementById("cart-items");
-    const orderSummary = document.getElementById("order-summary");
-    const totalInput = document.getElementById("total");
-
-    function updateCartCount() {
-      const totalItems = cart.reduce(function(sum, item) {
-        return sum + item.quantity;
-      }, 0);
-
-      cartCount.textContent = totalItems;
-    }
-
-    function addToCart(name, price) {
-      const existingItem = cart.find(function(item) {
-        return item.name === name;
+    function addToCart(productName, price) {
+      cart.push({
+        product: productName,
+        price: price,
+        personName: ""
       });
 
-      if (existingItem) {
-        existingItem.quantity += 1;
-      } else {
-        cart.push({
-          name: name,
-          price: price,
-          quantity: 1
-        });
+      updateCart();
+      openCart();
+    }
+
+    function updateCart() {
+      const cartCount = document.getElementById("cartCount");
+      const cartItems = document.getElementById("cartItems");
+
+      cartCount.textContent = cart.length;
+      cartItems.innerHTML = "";
+
+      if (cart.length === 0) {
+        cartItems.innerHTML = `
+          <p class="empty-cart">Your cart is empty.</p>
+        `;
+
+        updateOrderDetails();
+        return;
       }
 
-      updateCartCount();
+      cart.forEach(function(item, index) {
+        const itemElement = document.createElement("div");
 
-      if (modal.classList.contains("show")) {
-        renderCart();
-        updateOrderSummary();
-      }
+        itemElement.className = "cart-item";
 
-      alert(name + " added to cart");
+        itemElement.innerHTML = `
+          <strong>
+            ${index + 1}. ${item.product} - ${item.price}
+          </strong>
+
+          <input
+            type="text"
+            placeholder="Name of the person"
+            value="${item.personName}"
+            oninput="updatePersonName(${index}, this.value)"
+            required
+          >
+
+          <button
+            type="button"
+            class="remove-item"
+            onclick="removeFromCart(${index})"
+          >
+            Remove
+          </button>
+        `;
+
+        cartItems.appendChild(itemElement);
+      });
+
+      updateOrderDetails();
+    }
+
+    function updatePersonName(index, name) {
+      cart[index].personName = name;
+      updateOrderDetails();
     }
 
     function removeFromCart(index) {
       cart.splice(index, 1);
-
-      updateCartCount();
-      renderCart();
-      updateOrderSummary();
-
-      if (cart.length === 0) {
-        closeOrderForm();
-      }
+      updateCart();
     }
 
-    function renderCart() {
-      cartItemsContainer.innerHTML = "";
+    function updateOrderDetails() {
+      const orderDetails = document.getElementById("orderDetails");
 
-      cart.forEach(function(item, index) {
-        const itemTotal = item.price * item.quantity;
-
-        const itemElement = document.createElement("div");
-        itemElement.className = "cart-item";
-
-        const itemInfo = document.createElement("div");
-        itemInfo.className = "cart-item-info";
-
-        itemInfo.innerHTML = `
-          <strong>${item.name}</strong><br>
-          Quantity: ${item.quantity} |
-          ${itemTotal.toFixed(1)} BD
-        `;
-
-        const removeButton = document.createElement("button");
-        removeButton.type = "button";
-        removeButton.className = "remove-item";
-        removeButton.textContent = "Remove";
-
-        removeButton.addEventListener("click", function() {
-          removeFromCart(index);
-        });
-
-        itemElement.appendChild(itemInfo);
-        itemElement.appendChild(removeButton);
-        cartItemsContainer.appendChild(itemElement);
-      });
-    }
-
-    function updateOrderSummary() {
-      let total = 0;
-
-      const summary = cart.map(function(item) {
-        const itemTotal = item.price * item.quantity;
-
-        total += itemTotal;
-
-        return (
-          item.name +
-          " x" +
-          item.quantity +
-          " - " +
-          itemTotal.toFixed(1) +
-          " BD"
-        );
+      const details = cart.map(function(item, index) {
+        return `${index + 1}. ${item.product} - ${item.price} - Name: ${item.personName}`;
       }).join("\n");
 
-      orderSummary.value =
-        summary +
-        "\n\nTotal: " +
-        total.toFixed(1) +
-        " BD";
-
-      totalInput.value = total.toFixed(1) + " BD";
+      orderDetails.value = details;
     }
 
     function openCart() {
-      if (cart.length === 0) {
-        alert("Your cart is empty.");
-        return;
-      }
-
-      renderCart();
-      updateOrderSummary();
-
-      modal.classList.add("show");
-      document.body.classList.add("no-scroll");
+      document.getElementById("orderModal").classList.add("show");
+      document.body.style.overflow = "hidden";
+      updateCart();
     }
 
     function closeOrderForm() {
-      modal.classList.remove("show");
-      document.body.classList.remove("no-scroll");
+      document.getElementById("orderModal").classList.remove("show");
+      document.body.style.overflow = "auto";
     }
 
-    document.querySelectorAll(".add-to-cart").forEach(function(button) {
-      button.addEventListener("click", function() {
-        const name = button.dataset.name;
-        const price = Number(button.dataset.price);
+    document.getElementById("orderForm").addEventListener("submit", function(event) {
+      if (cart.length === 0) {
+        event.preventDefault();
+        alert("Please add at least one product to your cart.");
+        return;
+      }
 
-        addToCart(name, price);
+      const missingName = cart.some(function(item) {
+        return item.personName.trim() === "";
       });
+
+      if (missingName) {
+        event.preventDefault();
+        alert("Please write the person's name for every product.");
+        return;
+      }
+
+      updateOrderDetails();
     });
 
-    document
-      .getElementById("open-cart-btn")
-      .addEventListener("click", openCart);
-
-    document
-      .getElementById("close-order-btn")
-      .addEventListener("click", closeOrderForm);
-
     window.addEventListener("click", function(event) {
+      const modal = document.getElementById("orderModal");
+
       if (event.target === modal) {
         closeOrderForm();
       }
