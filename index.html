@@ -149,7 +149,7 @@
       text-decoration: underline;
     }
 
-    /* Order popup */
+    /* نافذة السلة والطلب */
     .order-modal {
       display: none;
       position: fixed;
@@ -230,7 +230,6 @@
       margin-top: 5px;
     }
 
-    /* Cart items */
     .cart-item {
       display: grid;
       grid-template-columns: 1fr;
@@ -305,7 +304,6 @@
   <main>
     <section class="products" aria-label="SHO SHO Products">
 
-      <!-- SHOSHO'S SECRET -->
       <article class="card">
         <img
           src="secret-matcha.png"
@@ -318,15 +316,15 @@
         <div class="price">2.5 BD</div>
 
         <button
-          class="btn"
+          class="btn add-to-cart"
           type="button"
-          onclick="addToCart(&quot;SHOSHO'S SECRET&quot;, '2.5 BD')"
+          data-product="SHOSHO'S SECRET"
+          data-price="2.5 BD"
         >
           Add to Cart
         </button>
       </article>
 
-      <!-- OG MATCHA -->
       <article class="card">
         <img
           src="og-matcha.png"
@@ -339,15 +337,15 @@
         <div class="price">1.8 BD</div>
 
         <button
-          class="btn"
+          class="btn add-to-cart"
           type="button"
-          onclick="addToCart('OG MATCHA', '1.8 BD')"
+          data-product="OG MATCHA"
+          data-price="1.8 BD"
         >
           Add to Cart
         </button>
       </article>
 
-      <!-- SHOSHO'S BREW -->
       <article class="card">
         <img
           src="shoshos-brew.png"
@@ -360,15 +358,15 @@
         <div class="price">1.8 BD</div>
 
         <button
-          class="btn"
+          class="btn add-to-cart"
           type="button"
-          onclick="addToCart(&quot;SHOSHO'S BREW&quot;, '1.8 BD')"
+          data-product="SHOSHO'S BREW"
+          data-price="1.8 BD"
         >
           Add to Cart
         </button>
       </article>
 
-      <!-- ICED AMERICANO -->
       <article class="card">
         <img
           src="iced-americano.png"
@@ -381,9 +379,10 @@
         <div class="price">1 BD</div>
 
         <button
-          class="btn"
+          class="btn add-to-cart"
           type="button"
-          onclick="addToCart('ICED AMERICANO', '1 BD')"
+          data-product="ICED AMERICANO"
+          data-price="1 BD"
         >
           Add to Cart
         </button>
@@ -395,21 +394,24 @@
       <button
         class="btn cart-btn"
         type="button"
-        onclick="openCart()"
+        id="openCartButton"
       >
         View Cart (<span id="cartCount">0</span>)
       </button>
     </div>
   </main>
 
-  <!-- Order Form Popup -->
-  <div id="orderModal" class="order-modal">
+  <!-- نافذة السلة والطلب -->
+  <div
+    id="orderModal"
+    class="order-modal"
+  >
     <div class="order-box">
 
       <button
         type="button"
         class="close-btn"
-        onclick="closeOrderForm()"
+        id="closeOrderButton"
         aria-label="Close"
       >
         &times;
@@ -425,7 +427,11 @@
         class="order-form"
         id="orderForm"
       >
-        <input type="hidden" name="form-name" value="orders">
+        <input
+          type="hidden"
+          name="form-name"
+          value="orders"
+        >
 
         <label for="name">Your Name</label>
         <input
@@ -503,24 +509,67 @@
   <script>
     let cart = [];
 
-    /*
-      إضافة المنتج إلى السلة فقط.
-      لا يتم فتح نافذة الطلب تلقائيًا.
-    */
-    function addToCart(productName, price) {
-      cart.push({
-        product: productName,
-        price: price,
-        personName: ""
-      });
+    const cartCount = document.getElementById("cartCount");
+    const cartItems = document.getElementById("cartItems");
+    const orderModal = document.getElementById("orderModal");
+    const orderDetails = document.getElementById("orderDetails");
+    const orderForm = document.getElementById("orderForm");
+    const openCartButton = document.getElementById("openCartButton");
+    const closeOrderButton = document.getElementById("closeOrderButton");
 
+    const addToCartButtons = document.querySelectorAll(".add-to-cart");
+
+    /*
+      إضافة المنتج إلى السلة فقط
+    */
+    addToCartButtons.forEach(function(button) {
+      button.addEventListener("click", function() {
+        const productName = button.getAttribute("data-product");
+        const price = button.getAttribute("data-price");
+
+        cart.push({
+          product: productName,
+          price: price,
+          personName: ""
+        });
+
+        updateCart();
+
+        const originalText = button.textContent;
+
+        button.textContent = "Added ✓";
+
+        setTimeout(function() {
+          button.textContent = originalText;
+        }, 1000);
+      });
+    });
+
+    /*
+      فتح السلة عند الضغط على View Cart
+    */
+    openCartButton.addEventListener("click", function() {
+      orderModal.classList.add("show");
+      document.body.style.overflow = "hidden";
       updateCart();
+    });
+
+    /*
+      إغلاق السلة
+    */
+    closeOrderButton.addEventListener("click", function() {
+      closeOrderForm();
+    });
+
+    function closeOrderForm() {
+      orderModal.classList.remove("show");
+      document.body.style.overflow = "auto";
     }
 
+    /*
+      تحديث محتوى السلة
+    */
     function updateCart() {
-      const cartCount = document.getElementById("cartCount");
-      const cartItems = document.getElementById("cartItems");
-
       cartCount.textContent = cart.length;
       cartItems.innerHTML = "";
 
@@ -534,80 +583,63 @@
       }
 
       cart.forEach(function(item, index) {
-        const itemElement = document.createElement("div");
+        const cartItem = document.createElement("div");
 
-        itemElement.className = "cart-item";
+        cartItem.className = "cart-item";
 
-        itemElement.innerHTML = `
-          <strong>
-            ${index + 1}. ${item.product} - ${item.price}
-          </strong>
+        const productName = document.createElement("strong");
 
-          <input
-            type="text"
-            placeholder="Name of the person"
-            value="${item.personName}"
-            required
-          >
+        productName.textContent =
+          `${index + 1}. ${item.product} - ${item.price}`;
 
-          <button
-            type="button"
-            class="remove-item"
-          >
-            Remove
-          </button>
-        `;
+        const nameInput = document.createElement("input");
 
-        const nameInput = itemElement.querySelector("input");
+        nameInput.type = "text";
+        nameInput.placeholder = "Name of the person";
+        nameInput.value = item.personName;
+        nameInput.required = true;
 
         nameInput.addEventListener("input", function() {
-          updatePersonName(index, this.value);
+          item.personName = nameInput.value;
+          updateOrderDetails();
         });
 
-        const removeButton = itemElement.querySelector(".remove-item");
+        const removeButton = document.createElement("button");
+
+        removeButton.type = "button";
+        removeButton.className = "remove-item";
+        removeButton.textContent = "Remove";
 
         removeButton.addEventListener("click", function() {
-          removeFromCart(index);
+          cart.splice(index, 1);
+          updateCart();
         });
 
-        cartItems.appendChild(itemElement);
+        cartItem.appendChild(productName);
+        cartItem.appendChild(nameInput);
+        cartItem.appendChild(removeButton);
+
+        cartItems.appendChild(cartItem);
       });
 
       updateOrderDetails();
     }
 
-    function updatePersonName(index, name) {
-      cart[index].personName = name;
-      updateOrderDetails();
-    }
-
-    function removeFromCart(index) {
-      cart.splice(index, 1);
-      updateCart();
-    }
-
+    /*
+      تجهيز تفاصيل الطلب لإرسالها إلى Netlify
+    */
     function updateOrderDetails() {
-      const orderDetails = document.getElementById("orderDetails");
-
       const details = cart.map(function(item, index) {
-        return ${index + 1}. ${item.product} - ${item.price} - Name: ${item.personName};
+        return `${index + 1}. ${item.product} - ${item.price} - Name: ${item.personName}`;
       }).join("\n");
 
       orderDetails.value = details;
     }
 
-    function openCart() {
-      document.getElementById("orderModal").classList.add("show");
-      document.body.style.overflow = "hidden";
-      updateCart();
-    }
-
-    function closeOrderForm() {
-      document.getElementById("orderModal").classList.remove("show");
-      document.body.style.overflow = "auto";
-    }
-
-    document.getElementById("orderForm").addEventListener("submit", function(event) {
+    /*
+      التحقق من الطلب قبل الإرسال
+    */
+    orderForm.addEventListener("submit", function(event) {
       if (cart.length === 0) {
         event.preventDefault();
         alert("Please add at least one product to your cart.");
@@ -627,14 +659,18 @@
       updateOrderDetails();
     });
 
+    /*
+      إغلاق النافذة عند الضغط خارجها
+    */
     window.addEventListener("click", function(event) {
-      const modal = document.getElementById("orderModal");
-
-      if (event.target === modal) {
+      if (event.target === orderModal) {
         closeOrderForm();
       }
     });
 
+    /*
+      إغلاق النافذة بزر Escape
+    */
     document.addEventListener("keydown", function(event) {
       if (event.key === "Escape") {
         closeOrderForm();
