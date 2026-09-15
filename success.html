@@ -3,9 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    http-equiv="refresh"
+    content="4;url=https://ig.me/m/shoshomatcha"
+  >
+
   <title>Order Received | SHO SHO</title>
 
   <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
     body {
       margin: 0;
       min-height: 100vh;
@@ -13,7 +24,6 @@
       align-items: center;
       justify-content: center;
       text-align: center;
-      font-family: Arial, sans-serif;
       color: #3d2b1f;
       background: linear-gradient(180deg, #fff7f3, #f8efe7);
     }
@@ -22,13 +32,14 @@
       width: 90%;
       max-width: 450px;
       padding: 35px 25px;
-      background: white;
+      background: #fffaf7;
       border-radius: 22px;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
     }
 
     h1 {
       color: #d94f8b;
+      margin-bottom: 15px;
     }
 
     p {
@@ -36,15 +47,25 @@
       line-height: 1.6;
     }
 
-    a {
+    .instagram-btn {
       display: inline-block;
       margin-top: 15px;
-      padding: 12px 22px;
+      padding: 13px 24px;
       border-radius: 999px;
-      background: #d94f8b;
+      background: linear-gradient(135deg, #e978ad, #d94f8b);
       color: white;
       text-decoration: none;
       font-weight: bold;
+      box-shadow: 0 6px 16px rgba(217, 79, 139, 0.25);
+    }
+
+    .instagram-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .small-text {
+      font-size: 14px;
+      margin-top: 18px;
     }
   </style>
 </head>
@@ -52,12 +73,28 @@
 <body>
   <div class="box">
     <h1>Thank You!</h1>
-    <p>Your order has been received successfully.</p>
-    <p>Please contact us on Instagram and send your payment receipt to confirm your order.</p>
 
-    <a href="https://shoshomatcha.netlify.app/">
-      Back to Menu
+    <p>
+      Your order has been received successfully.
+    </p>
+
+    <p>
+      Message us on Instagram to receive payment details
+      and complete your order.
+    </p>
+
+    <a
+      class="instagram-btn"
+      href="https://ig.me/m/shoshomatcha"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Message us on Instagram
     </a>
+
+    <p class="small-text">
+      You will be redirected to Instagram in a few seconds.
+    </p>
   </div>
 </body>
 </html>
