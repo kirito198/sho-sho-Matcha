@@ -25,9 +25,13 @@
       min-height: 100vh;
     }
 
+    body.no-scroll {
+      overflow: hidden;
+    }
+
     .hero {
       text-align: center;
-      padding: 35px 20px 25px;
+      padding: 35px 20px 20px;
     }
 
     .logo {
@@ -47,6 +51,12 @@
     .subtitle {
       font-size: 1.1rem;
       color: #7a5a48;
+    }
+
+    .cart-bar {
+      display: flex;
+      justify-content: center;
+      margin: 5px 20px 25px;
     }
 
     .products {
@@ -121,6 +131,10 @@
       box-shadow: 0 10px 20px rgba(217, 79, 139, 0.35);
       outline: 3px solid rgba(217, 79, 139, 0.25);
       outline-offset: 3px;
+    }
+
+    .cart-btn {
+      max-width: 220px;
     }
 
     .footer {
@@ -208,6 +222,11 @@
       resize: vertical;
     }
 
+    #order-summary {
+      min-height: 130px;
+      white-space: pre-line;
+    }
+
     .payment-note {
       margin: 18px 0;
       color: #7a5a48;
@@ -252,10 +271,19 @@
     <p class="subtitle">Delicious Homemade Matcha</p>
   </header>
 
+  <div class="cart-bar">
+    <button
+      class="btn cart-btn"
+      type="button"
+      id="open-cart-btn"
+    >
+      Cart (<span id="cart-count">0</span>)
+    </button>
+  </div>
+
   <main>
     <section class="products" aria-label="SHO SHO Products">
 
-      <!-- SHOSHO'S SECRET -->
       <article class="card">
         <img
           src="secret-matcha.png"
@@ -268,15 +296,15 @@
         <div class="price">2.5 BD</div>
 
         <button
-          class="btn"
+          class="btn add-to-cart"
           type="button"
-          onclick="orderProduct(&quot;SHOSHO'S SECRET&quot;)"
+          data-name="SHOSHO'S SECRET"
+          data-price="2.5"
         >
-          Order Now
+          Add to Cart
         </button>
       </article>
 
-      <!-- OG MATCHA -->
       <article class="card">
         <img
           src="og-matcha.png"
@@ -289,15 +317,15 @@
         <div class="price">1.8 BD</div>
 
         <button
-          class="btn"
+          class="btn add-to-cart"
           type="button"
-          onclick="orderProduct('OG MATCHA')"
+          data-name="OG MATCHA"
+          data-price="1.8"
         >
-          Order Now
+          Add to Cart
         </button>
       </article>
 
-      <!-- SHOSHO'S BREW -->
       <article class="card">
         <img
           src="shoshos-brew.png"
@@ -310,15 +338,15 @@
         <div class="price">1.8 BD</div>
 
         <button
-          class="btn"
+          class="btn add-to-cart"
           type="button"
-          onclick="orderProduct(&quot;SHOSHO'S BREW&quot;)"
+          data-name="SHOSHO'S BREW"
+          data-price="1.8"
         >
-          Order Now
+          Add to Cart
         </button>
       </article>
 
-      <!-- ICED AMERICANO -->
       <article class="card">
         <img
           src="iced-americano.png"
@@ -331,31 +359,37 @@
         <div class="price">1 BD</div>
 
         <button
-          class="btn"
+          class="btn add-to-cart"
           type="button"
-          onclick="orderProduct('ICED AMERICANO')"
+          data-name="ICED AMERICANO"
+          data-price="1"
         >
-          Order Now
+          Add to Cart
         </button>
       </article>
 
     </section>
   </main>
 
-  <!-- Order Form Popup -->
-  <div id="orderModal" class="order-modal">
+  <div
+    id="order-modal"
+    class="order-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="order-title"
+  >
     <div class="order-box">
 
       <button
         type="button"
         class="close-btn"
-        onclick="closeOrderForm()"
+        id="close-order-btn"
         aria-label="Close"
       >
         &times;
       </button>
 
-      <h2>Place Your Order</h2>
+      <h2 id="order-title">Place Your Order</h2>
 
       <form
         name="orders"
@@ -384,20 +418,27 @@
           required
         >
 
-        <label for="product">Your Order</label>
-        <input
-          type="text"
-          id="product"
-          name="product"
+        <label for="order-summary">Your Order</label>
+        <textarea
+          id="order-summary"
+          name="order-summary"
           readonly
           required
+        ></textarea>
+
+        <input
+          type="hidden"
+          id="total"
+          name="total"
         >
 
         <label for="pickup-time">Pickup Time</label>
         <input
-          type="datetime-local"
+          type="time"
           id="pickup-time"
           name="pickup-time"
+          min="08:00"
+          max="22:00"
           required
         >
 
@@ -409,8 +450,8 @@
         ></textarea>
 
         <p class="payment-note">
-          Please contact us through Instagram DM and send your payment receipt
-          to confirm your order.
+          After submitting your order, you will be redirected to Instagram.
+          Please message us there to receive payment details and confirm your order.
         </p>
 
         <button
@@ -437,20 +478,98 @@
   </footer>
 
   <script>
-    function orderProduct(productName) {
-      document.getElementById("product").value = productName;
-      document.getElementById("orderModal").classList.add("show");
-      document.body.style.overflow = "hidden";
+    const cart = [];
+
+    const modal = document.getElementById("order-modal");
+    const cartCount = document.getElementById("cart-count");
+    const orderSummary = document.getElementById("order-summary");
+    const totalInput = document.getElementById("total");
+
+    function updateCartCount() {
+      const totalItems = cart.reduce(function(sum, item) {
+        return sum + item.quantity;
+      }, 0);
+
+      cartCount.textContent = totalItems;
+    }
+
+    function addToCart(name, price) {
+      const existingItem = cart.find(function(item) {
+        return item.name === name;
+      });
+
+      if (existingItem) {
+        existingItem.quantity += 1;
+      } else {
+        cart.push({
+          name: name,
+          price: price,
+          quantity: 1
+        });
+      }
+
+      updateCartCount();
+
+      alert(name + " added to cart");
+    }
+
+    function openCart() {
+      if (cart.length === 0) {
+        alert("Your cart is empty.");
+        return;
+      }
+
+      let total = 0;
+
+      const summary = cart.map(function(item) {
+        const itemTotal = item.price * item.quantity;
+        total += itemTotal;
+
+        return (
+          item.name +
+          " x" +
+          item.quantity +
+          " - " +
+          itemTotal.toFixed(1) +
+          " BD"
+        );
+      }).join("\n");
+
+      orderSummary.value =
+        summary +
+        "\n\nTotal: " +
+        total.toFixed(1) +
+        " BD";
+
+      totalInput.value = total.toFixed(1) + " BD";
+
+      modal.classList.add("show");
+      document.body.classList.add("no-scroll");
     }
 
     function closeOrderForm() {
-      document.getElementById("orderModal").classList.remove("show");
-      document.body.style.overflow = "auto";
+      modal.classList.remove("show");
+      document.body.classList.remove("no-scroll");
     }
 
-    window.addEventListener("click", function(event) {
-      const modal = document.getElementById("orderModal");
+    document.querySelectorAll(".add-to-cart").forEach(function(button) {
+      button.addEventListener("click", function() {
+        const name = button.dataset.name;
+        const price = Number(button.dataset.price);
 
+        addToCart(name, price);
+      });
+    });
+
+    document
+      .getElementById("open-cart-btn")
+      .addEventListener("click", openCart);
+
+    document
+      .getElementById("close-order-btn")
+      .addEventListener("click", closeOrderForm);
+
+    window.addEventListener("click", function(event) {
       if (event.target === modal) {
         closeOrderForm();
       }
