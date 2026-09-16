@@ -387,12 +387,30 @@
         text-align: center;
       }
     }
+.oat-milk-note {
+  font-size: 11px;
+  font-weight: normal;
+  color: #777;
+  margin-left: 5px;
+}
+
+.language-btn {
+  margin-top: 15px;
+  padding: 8px 16px;
+  border: 1px solid #d94f8b;
+  border-radius: 999px;
+  background: white;
+  color: #d94f8b;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+
   </style>
 </head>
 
 <body>
 
-  <!-- إشعار إضافة المنتج -->
   <div
     id="cartNotification"
     class="cart-notification"
@@ -408,7 +426,14 @@
     >
 
     <h1>SHO SHO</h1>
-    <p class="subtitle">Delicious Homemade Matcha</p>
+    <p class="subtitle" id="subtitle">
+  Delicious Homemade Matcha
+</p>
+
+<button id="languageToggle" class="language-btn" type="button">
+  العربية
+</button>
+
   </header>
 
   <main>
@@ -423,8 +448,17 @@
         >
 
         <h2>SHOSHO'S SECRET</h2>
-        <p>Signature Matcha</p>
-        <div class="price">2.5 BD</div>
+
+<p>
+  Signature Matcha
+  <small class="oat-milk-note">
+  *contains oat milk*
+</small>
+
+</p>
+
+<div class="price">2.5 BD</div>
+
 
         <button
           class="btn"
@@ -506,7 +540,9 @@
         type="button"
         onclick="openCart()"
       >
-        View Cart (<span id="cartCount">0</span>)
+        <span id="viewCartText">View Cart</span>
+(<span id="cartCount">0</span>)
+
       </button>
     </div>
   </main>
@@ -560,7 +596,6 @@
           <p class="empty-cart">Your cart is empty.</p>
         </div>
 
-        <!-- التوتل في خانة منفصلة -->
         <div id="cartTotal" class="cart-total">
           Total: 0 BD
         </div>
@@ -588,7 +623,14 @@
 
         <!-- Payment Instructions -->
         <details class="payment-instructions">
-          <summary>Payment Instructions (BenefitPay – Fawri+)</summary>
+          <summary
+  id="paymentTitle"
+  data-en="Payment Instructions (BenefitPay – Fawri+)"
+  data-ar="تعليمات الدفع (BenefitPay – فوري+)"
+>
+  Payment Instructions (BenefitPay – Fawri+)
+</summary>
+
 
           <div class="instructions-content">
 
@@ -598,25 +640,27 @@
               class="payment-qr"
             >
 
-            <ol>
-              <li>Capture the QR code.</li>
-              <li>Open your BenefitPay app.</li>
-              <li>Choose Fawri+ and click on “Scan QR”.</li>
-              <li>
-                After opening the camera, click on the top right to upload a photo.
-              </li>
-              <li>
-                Select the QR code you captured from our website and complete the payment.
-              </li>
-              <li>
-                Kindly share the transaction with us on Instagram to confirm your order.
-              </li>
-            </ol>
+            <ol id="paymentSteps">
+  <li>Capture the QR code.</li>
+  <li>Open your BenefitPay app.</li>
+  <li>Choose Fawri+ and click on “Scan QR”.</li>
+  <li>
+    After opening the camera, click on the top right to upload a photo.
+  </li>
+  <li>
+    Select the QR code you captured from our website and complete the payment.
+  </li>
+  <li>
+    Kindly share the transaction with us on Instagram to confirm your order.
+  </li>
+</ol>
 
-            <p class="note">
-              <strong>Note:</strong>
-              We will share the pickup location with you after receiving the payment transaction.
-            </p>
+
+            <p class="note" id="paymentNote">
+  <strong>Note:</strong>
+  We will share the pickup location with you after receiving the payment transaction.
+</p>
+
 
           </div>
         </details>
@@ -646,7 +690,9 @@
 
   <script>
     let cart = [];
-    let notificationTimeout;
+let notificationTimeout;
+let isArabic = false;
+
 
     function addToCart(productName, price) {
       cart.push({
@@ -692,14 +738,19 @@
       let total = 0;
 
       if (cart.length === 0) {
-        cartItems.innerHTML = `
-          <p class="empty-cart">Your cart is empty.</p>
-        `;
+  cartItems.innerHTML = `
+    <p class="empty-cart">
+      ${isArabic ? "السلة فارغة." : "Your cart is empty."}
+    </p>
+  `;
 
-        cartTotal.textContent = "Total: 0 BD";
-        updateOrderDetails();
-        return;
-      }
+  cartTotal.textContent =
+    `${isArabic ? "المجموع" : "Total"}: 0 BD`;
+
+  updateOrderDetails();
+  return;
+}
+
 
       cart.forEach(function(item, index) {
         const itemPrice = parseFloat(item.price);
@@ -711,13 +762,22 @@
         itemElement.className = "cart-item";
 
         itemElement.innerHTML = `
-          <strong>
-            ${index + 1}. ${item.product} - ${item.price}
-          </strong>
+         <strong>
+  ${index + 1}. ${item.product} - ${item.price}
+
+  ${
+   item.product === "SHOSHO'S SECRET"
+  ? `<small class="oat-milk-note">
+       ${isArabic ? "*يحتوي على حليب الشوفان*" : "*contains oat milk*"}
+     </small>`
+  : ""
+
+  }
+</strong>
 
           <input
             type="text"
-            placeholder="Name of the person"
+            placeholder="${isArabic ? "اسم الشخص" : "Name of the person"}"
             value="${item.personName}"
             required
           >
@@ -726,7 +786,7 @@
             type="button"
             class="remove-item"
           >
-            Remove
+           ${isArabic ? "حذف" : "Remove"}
           </button>
         `;
 
@@ -748,7 +808,8 @@
       });
 
       cartTotal.textContent =
-        `Total: ${total.toFixed(1)} BD`;
+  `${isArabic ? "المجموع" : "Total"}: ${total.toFixed(1)} BD`;
+
 
       updateOrderDetails();
     }
@@ -849,6 +910,134 @@
         closeOrderForm();
       }
     });
+document
+  .getElementById("languageToggle")
+  .addEventListener("click", function() {
+    isArabic = !isArabic;
+
+    document.documentElement.lang =
+      isArabic ? "ar" : "en";
+
+    document.documentElement.dir =
+      isArabic ? "rtl" : "ltr";
+
+    document.getElementById("subtitle").textContent =
+      isArabic
+        ? "Delicious Homemade Matcha"
+        : "Delicious Homemade Matcha";
+
+    document.getElementById("viewCartText").textContent =
+      isArabic
+        ? "عرض السلة"
+        : "View Cart";
+
+    document.querySelector(".language-btn").textContent =
+      isArabic
+        ? "English"
+        : "العربية";
+
+    document.querySelector(".order-box h2").textContent =
+      isArabic
+        ? "إتمام الطلب"
+        : "Place Your Order";
+
+    document.querySelector('label[for="name"]').textContent =
+      isArabic
+        ? "الاسم"
+        : "Your Name";
+
+    document.getElementById("name").placeholder =
+      isArabic
+        ? " الأسم"
+        : "Your name";
+
+    document.querySelector('label[for="instagram"]').textContent =
+      isArabic
+        ? "الإنستغرام"
+        : "Instagram";
+
+    document.querySelector('label[for="pickup-time"]').textContent =
+      isArabic
+        ? "وقت الاستلام"
+        : "Pickup Time";
+
+    document.querySelector('label[for="notes"]').textContent =
+      isArabic
+        ? "ملاحظات"
+        : "Notes";
+
+    document.getElementById("notes").placeholder =
+      isArabic
+        ? "أي طلبات خاصة؟"
+        : "Any special requests؟";
+
+    document.querySelector(
+      ".payment-instructions summary"
+    ).textContent =
+      isArabic
+        ? "تعليمات الدفع (BenefitPay – Fawri+)"
+        : "Payment Instructions (BenefitPay – Fawri+)";
+
+    document.querySelector(".submit-btn").textContent =
+      isArabic
+        ? "إرسال الطلب"
+        : "Submit Order";
+document.querySelectorAll(".product-name").forEach(function(product) {
+  product.textContent = isArabic
+    ? product.dataset.ar
+    : product.dataset.en;
+});
+
+document.querySelectorAll(".oat-milk-note").forEach(function(note) {
+  note.textContent = isArabic
+    ? "*يحتوي على حليب الشوفان*"
+    : "*contains oat milk*";
+});
+
+document.getElementById("paymentTitle").textContent =
+  isArabic
+    ? "تعليمات الدفع (BenefitPay – فوري+)"
+    : "Payment Instructions (BenefitPay – Fawri+)";
+
+document.getElementById("paymentSteps").innerHTML =
+  isArabic
+    ? `
+      <li>صوّر رمز QR.</li>
+      <li>افتح تطبيق BenefitPay.</li>
+      <li>اختار فوري+ واضغط على مسح QR.</li>
+      <li>بعد فتح الكاميرا، اضغط أعلى اليمين لرفع صورة.</li>
+      <li>اختار صورة رمز QR من موقعنا وأكمل عملية الدفع.</li>
+      <li>أرسل عملية التحويل لنا عبر الإنستغرام لتأكيد طلبك.</li>
+    `
+    : `
+      <li>Capture the QR code.</li>
+      <li>Open your BenefitPay app.</li>
+      <li>Choose Fawri+ and click on “Scan QR”.</li>
+      <li>After opening the camera, click on the top right to upload a photo.</li>
+      <li>Select the QR code you captured from our website and complete the payment.</li>
+      <li>Kindly share the transaction with us on Instagram to confirm your order.</li>
+    `;
+
+document.getElementById("paymentNote").innerHTML =
+  isArabic
+    ? `
+      <strong>ملاحظة:</strong>
+      سنرسل لك موقع الاستلام بعد استلام عملية التحويل.
+    `
+    : `
+      <strong>Note:</strong>
+      We will share the pickup location with you after receiving the payment transaction.
+    `;
+
+document.querySelectorAll(".card .btn").forEach(function(button) {
+  button.textContent = isArabic
+    ? "أضف إلى السلة"
+    : "Add to Cart";
+});
+
+    updateCart();
+  });
+
   </script>
 
 </body>
