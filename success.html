@@ -21,10 +21,11 @@
       text-align: center;
       color: #3d2b1f;
       background: linear-gradient(180deg, #fff7f3, #f8efe7);
+      padding: 20px;
     }
 
     .box {
-      width: 90%;
+      width: 100%;
       max-width: 450px;
       padding: 35px 25px;
       background: #fffaf7;
@@ -42,6 +43,69 @@
       line-height: 1.6;
     }
 
+    .payment-instructions {
+      margin: 25px 0 18px;
+      border: 1px solid #ead8ce;
+      border-radius: 14px;
+      background: #fff;
+      overflow: hidden;
+      text-align: left;
+    }
+
+    .payment-instructions summary {
+      padding: 14px 16px;
+      color: #d94f8b;
+      font-weight: bold;
+      cursor: pointer;
+      list-style: none;
+      line-height: 1.4;
+    }
+
+    .payment-instructions summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .payment-instructions summary::after {
+      content: "+";
+      float: right;
+      font-size: 20px;
+    }
+
+    .payment-instructions[open] summary::after {
+      content: "−";
+    }
+
+    .instructions-content {
+      padding: 0 18px 16px;
+      color: #7a5a48;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .payment-qr {
+      display: block;
+      width: 220px;
+      max-width: 80%;
+      height: auto;
+      margin: 5px auto 18px;
+      border-radius: 14px;
+      border: 1px solid #ead8ce;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    .instructions-content ol {
+      padding-left: 20px;
+      margin: 0 0 12px;
+    }
+
+    .note {
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #fff7f3;
+      color: #5a3c2c !important;
+      text-align: left;
+    }
+
     .instagram-btn {
       display: inline-block;
       margin-top: 15px;
@@ -52,10 +116,14 @@
       text-decoration: none;
       font-weight: bold;
       box-shadow: 0 6px 16px rgba(217, 79, 139, 0.25);
+      transition: 0.2s ease;
     }
 
-    .instagram-btn:hover {
+    .instagram-btn:hover,
+    .instagram-btn:focus-visible {
       transform: translateY(-2px);
+      outline: 3px solid rgba(217, 79, 139, 0.25);
+      outline-offset: 3px;
     }
   </style>
 </head>
@@ -69,9 +137,41 @@
     </p>
 
     <p>
-      To receive the payment details and confirm your order,
-      please contact us through Instagram.
+      Please complete the payment using BenefitPay – Fawri+,
+      then send the transaction confirmation to us through Instagram.
     </p>
+
+    <details class="payment-instructions" open>
+      <summary>Payment Instructions (BenefitPay – Fawri+)</summary>
+
+      <div class="instructions-content">
+        <img
+          src="payment-qr.png"
+          alt="SHO SHO BenefitPay QR Code"
+          class="payment-qr"
+        >
+
+        <ol>
+          <li>Capture the QR code.</li>
+          <li>Open your BenefitPay app.</li>
+          <li>Choose Fawri+ and click on “Scan QR”.</li>
+          <li>
+            After opening the camera, click on the top right to upload a photo.
+          </li>
+          <li>
+            Select the QR code you captured from our website and complete the payment.
+          </li>
+          <li>
+            Kindly share the transaction with us on Instagram to confirm your order.
+          </li>
+        </ol>
+
+        <p class="note">
+          <strong>Note:</strong>
+          We will share the pickup location with you after receiving the payment transaction.
+        </p>
+      </div>
+    </details>
 
     <a
       class="instagram-btn"
