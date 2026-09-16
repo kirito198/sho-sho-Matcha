@@ -55,7 +55,7 @@
       gap: 22px;
       width: 90%;
       max-width: 900px;
-      margin: 20px auto 45px;
+      margin: 20px auto 30px;
     }
 
     .card {
@@ -121,6 +121,15 @@
       box-shadow: 0 10px 20px rgba(217, 79, 139, 0.35);
       outline: 3px solid rgba(217, 79, 139, 0.25);
       outline-offset: 3px;
+    }
+
+    .cart-container {
+      text-align: center;
+      margin: 25px auto 35px;
+    }
+
+    .cart-btn {
+      max-width: 220px;
     }
 
     .footer {
@@ -223,6 +232,7 @@
       font-weight: bold;
       cursor: pointer;
       list-style: none;
+      line-height: 1.4;
     }
 
     .payment-instructions summary::-webkit-details-marker {
@@ -274,6 +284,47 @@
       margin-top: 5px;
     }
 
+    /* Cart items */
+    .cart-item {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      padding: 14px;
+      margin-bottom: 12px;
+      background: #fff;
+      border: 1px solid #decfc5;
+      border-radius: 12px;
+    }
+
+    .cart-item strong {
+      color: #5a3c2c;
+      line-height: 1.4;
+    }
+
+    .cart-item input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #decfc5;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .remove-item {
+      border: none;
+      background: #f3d5df;
+      color: #a83262;
+      padding: 8px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .empty-cart {
+      color: #7a5a48;
+      text-align: center;
+      padding: 10px;
+    }
+
     @media (max-width: 600px) {
       h1 {
         font-size: 2.2rem;
@@ -323,9 +374,9 @@
         <button
           class="btn"
           type="button"
-          onclick="orderProduct(&quot;SHOSHO'S SECRET&quot;)"
+          onclick="addToCart(&quot;SHOSHO'S SECRET&quot;, '2.5 BD')"
         >
-          Order Now
+          Add to Cart
         </button>
       </article>
 
@@ -344,9 +395,9 @@
         <button
           class="btn"
           type="button"
-          onclick="orderProduct('OG MATCHA')"
+          onclick="addToCart('OG MATCHA', '1.8 BD')"
         >
-          Order Now
+          Add to Cart
         </button>
       </article>
 
@@ -365,9 +416,9 @@
         <button
           class="btn"
           type="button"
-          onclick="orderProduct(&quot;SHOSHO'S BREW&quot;)"
+          onclick="addToCart(&quot;SHOSHO'S BREW&quot;, '1.8 BD')"
         >
-          Order Now
+          Add to Cart
         </button>
       </article>
 
@@ -386,13 +437,23 @@
         <button
           class="btn"
           type="button"
-          onclick="orderProduct('ICED AMERICANO')"
+          onclick="addToCart('ICED AMERICANO', '1 BD')"
         >
-          Order Now
+          Add to Cart
         </button>
       </article>
 
     </section>
+
+    <div class="cart-container">
+      <button
+        class="btn cart-btn"
+        type="button"
+        onclick="openCart()"
+      >
+        View Cart (<span id="cartCount">0</span>)
+      </button>
+    </div>
   </main>
 
   <!-- Order Form Popup -->
@@ -416,10 +477,11 @@
         data-netlify="true"
         action="/success.html"
         class="order-form"
+        id="orderForm"
       >
         <input type="hidden" name="form-name" value="orders">
 
-        <label for="name">Name</label>
+        <label for="name">Your Name</label>
         <input
           type="text"
           id="name"
@@ -437,18 +499,21 @@
           required
         >
 
-        <label for="product">Your Order</label>
-        <input
-          type="text"
-          id="product"
-          name="product"
-          readonly
-          required
-        >
+        <label>Your Order</label>
+
+        <div id="cartItems">
+          <p class="empty-cart">Your cart is empty.</p>
+        </div>
+
+        <textarea
+          id="orderDetails"
+          name="order-details"
+          hidden
+        ></textarea>
 
         <label for="pickup-time">Pickup Time</label>
         <input
-          type="datetime-local"
+          type="time"
           id="pickup-time"
           name="pickup-time"
           required
@@ -520,16 +585,127 @@
   </footer>
 
   <script>
-    function orderProduct(productName) {
-      document.getElementById("product").value = productName;
+    let cart = [];
+
+    function addToCart(productName, price) {
+      cart.push({
+        product: productName,
+        price: price,
+        personName: ""
+      });
+
+      updateCart();
+    }
+
+    function updateCart() {
+      const cartCount = document.getElementById("cartCount");
+      const cartItems = document.getElementById("cartItems");
+
+      cartCount.textContent = cart.length;
+      cartItems.innerHTML = "";
+
+      if (cart.length === 0) {
+        cartItems.innerHTML = `
+          <p class="empty-cart">Your cart is empty.</p>
+        `;
+
+        updateOrderDetails();
+        return;
+      }
+
+      cart.forEach(function(item, index) {
+        const itemElement = document.createElement("div");
+
+        itemElement.className = "cart-item";
+
+        itemElement.innerHTML = `
+          <strong>
+            ${index + 1}. ${item.product} - ${item.price}
+          </strong>
+
+          <input
+            type="text"
+            placeholder="Name of the person"
+            value="${item.personName}"
+            required
+          >
+
+          <button
+            type="button"
+            class="remove-item"
+          >
+            Remove
+          </button>
+        `;
+
+        const nameInput = itemElement.querySelector("input");
+
+        nameInput.addEventListener("input", function() {
+          updatePersonName(index, this.value);
+        });
+
+        const removeButton = itemElement.querySelector(".remove-item");
+
+        removeButton.addEventListener("click", function() {
+          removeFromCart(index);
+        });
+
+        cartItems.appendChild(itemElement);
+      });
+
+      updateOrderDetails();
+    }
+
+    function updatePersonName(index, name) {
+      cart[index].personName = name;
+      updateOrderDetails();
+    }
+
+    function removeFromCart(index) {
+      cart.splice(index, 1);
+      updateCart();
+    }
+
+    function updateOrderDetails() {
+      const orderDetails = document.getElementById("orderDetails");
+
+      const details = cart.map(function(item, index) {
+        return `${index + 1}. ${item.product} - ${item.price} - Name: ${item.personName}`;
+      }).join("\n");
+
+      orderDetails.value = details;
+    }
+
+    function openCart() {
       document.getElementById("orderModal").classList.add("show");
       document.body.style.overflow = "hidden";
+      updateCart();
     }
 
     function closeOrderForm() {
       document.getElementById("orderModal").classList.remove("show");
       document.body.style.overflow = "auto";
     }
+
+    document.getElementById("orderForm").addEventListener("submit", function(event) {
+      if (cart.length === 0) {
+        event.preventDefault();
+        alert("Please add at least one product to your cart.");
+        return;
+      }
+
+      const missingName = cart.some(function(item) {
+        return item.personName.trim() === "";
+      });
+
+      if (missingName) {
+        event.preventDefault();
+        alert("Please write the person's name for every product.");
+        return;
+      }
+
+      updateOrderDetails();
+    });
 
     window.addEventListener("click", function(event) {
       const modal = document.getElementById("orderModal");
