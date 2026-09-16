@@ -55,7 +55,7 @@
       gap: 22px;
       width: 90%;
       max-width: 900px;
-      margin: 20px auto 30px;
+      margin: 20px auto 45px;
     }
 
     .card {
@@ -123,15 +123,6 @@
       outline-offset: 3px;
     }
 
-    .cart-container {
-      text-align: center;
-      margin: 25px auto 35px;
-    }
-
-    .cart-btn {
-      max-width: 220px;
-    }
-
     .footer {
       text-align: center;
       padding: 10px 20px 30px;
@@ -149,7 +140,7 @@
       text-decoration: underline;
     }
 
-    /* نافذة السلة والطلب */
+    /* Order popup */
     .order-modal {
       display: none;
       position: fixed;
@@ -217,57 +208,70 @@
       resize: vertical;
     }
 
-    .payment-note {
+    /* Payment Instructions */
+    .payment-instructions {
       margin: 18px 0;
+      border: 1px solid #ead8ce;
+      border-radius: 14px;
+      background: #fff;
+      overflow: hidden;
+    }
+
+    .payment-instructions summary {
+      padding: 14px 16px;
+      color: #d94f8b;
+      font-weight: bold;
+      cursor: pointer;
+      list-style: none;
+    }
+
+    .payment-instructions summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .payment-instructions summary::after {
+      content: "+";
+      float: right;
+      font-size: 20px;
+    }
+
+    .payment-instructions[open] summary::after {
+      content: "−";
+    }
+
+    .instructions-content {
+      padding: 0 18px 16px;
       color: #7a5a48;
       font-size: 14px;
-      line-height: 1.6;
-      text-align: center;
+      line-height: 1.7;
+    }
+
+    .payment-qr {
+      display: block;
+      width: 220px;
+      max-width: 80%;
+      height: auto;
+      margin: 5px auto 18px;
+      border-radius: 14px;
+      border: 1px solid #ead8ce;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    .instructions-content ol {
+      padding-left: 20px;
+      margin: 0 0 12px;
+    }
+
+    .instructions-content .note {
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #fff7f3;
+      color: #5a3c2c;
     }
 
     .submit-btn {
       max-width: 100%;
       margin-top: 5px;
-    }
-
-    .cart-item {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 8px;
-      padding: 14px;
-      margin-bottom: 12px;
-      background: #fff;
-      border: 1px solid #decfc5;
-      border-radius: 12px;
-    }
-
-    .cart-item strong {
-      color: #5a3c2c;
-      line-height: 1.4;
-    }
-
-    .cart-item input {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #decfc5;
-      border-radius: 8px;
-      font-size: 14px;
-    }
-
-    .remove-item {
-      border: none;
-      background: #f3d5df;
-      color: #a83262;
-      padding: 8px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .empty-cart {
-      color: #7a5a48;
-      text-align: center;
-      padding: 10px;
     }
 
     @media (max-width: 600px) {
@@ -304,6 +308,7 @@
   <main>
     <section class="products" aria-label="SHO SHO Products">
 
+      <!-- SHOSHO'S SECRET -->
       <article class="card">
         <img
           src="secret-matcha.png"
@@ -316,15 +321,15 @@
         <div class="price">2.5 BD</div>
 
         <button
-          class="btn add-to-cart"
+          class="btn"
           type="button"
-          data-product="SHOSHO'S SECRET"
-          data-price="2.5 BD"
+          onclick="orderProduct(&quot;SHOSHO'S SECRET&quot;)"
         >
-          Add to Cart
+          Order Now
         </button>
       </article>
 
+      <!-- OG MATCHA -->
       <article class="card">
         <img
           src="og-matcha.png"
@@ -337,15 +342,15 @@
         <div class="price">1.8 BD</div>
 
         <button
-          class="btn add-to-cart"
+          class="btn"
           type="button"
-          data-product="OG MATCHA"
-          data-price="1.8 BD"
+          onclick="orderProduct('OG MATCHA')"
         >
-          Add to Cart
+          Order Now
         </button>
       </article>
 
+      <!-- SHOSHO'S BREW -->
       <article class="card">
         <img
           src="shoshos-brew.png"
@@ -358,15 +363,15 @@
         <div class="price">1.8 BD</div>
 
         <button
-          class="btn add-to-cart"
+          class="btn"
           type="button"
-          data-product="SHOSHO'S BREW"
-          data-price="1.8 BD"
+          onclick="orderProduct(&quot;SHOSHO'S BREW&quot;)"
         >
-          Add to Cart
+          Order Now
         </button>
       </article>
 
+      <!-- ICED AMERICANO -->
       <article class="card">
         <img
           src="iced-americano.png"
@@ -379,39 +384,25 @@
         <div class="price">1 BD</div>
 
         <button
-          class="btn add-to-cart"
+          class="btn"
           type="button"
-          data-product="ICED AMERICANO"
-          data-price="1 BD"
+          onclick="orderProduct('ICED AMERICANO')"
         >
-          Add to Cart
+          Order Now
         </button>
       </article>
 
     </section>
-
-    <div class="cart-container">
-      <button
-        class="btn cart-btn"
-        type="button"
-        id="openCartButton"
-      >
-        View Cart (<span id="cartCount">0</span>)
-      </button>
-    </div>
   </main>
 
-  <!-- نافذة السلة والطلب -->
-  <div
-    id="orderModal"
-    class="order-modal"
-  >
+  <!-- Order Form Popup -->
+  <div id="orderModal" class="order-modal">
     <div class="order-box">
 
       <button
         type="button"
         class="close-btn"
-        id="closeOrderButton"
+        onclick="closeOrderForm()"
         aria-label="Close"
       >
         &times;
@@ -425,15 +416,10 @@
         data-netlify="true"
         action="/success.html"
         class="order-form"
-        id="orderForm"
       >
-        <input
-          type="hidden"
-          name="form-name"
-          value="orders"
-        >
+        <input type="hidden" name="form-name" value="orders">
 
-        <label for="name">Your Name</label>
+        <label for="name">Name</label>
         <input
           type="text"
           id="name"
@@ -451,21 +437,18 @@
           required
         >
 
-        <label>Your Order</label>
-
-        <div id="cartItems">
-          <p class="empty-cart">Your cart is empty.</p>
-        </div>
-
-        <textarea
-          id="orderDetails"
-          name="order-details"
-          hidden
-        ></textarea>
+        <label for="product">Your Order</label>
+        <input
+          type="text"
+          id="product"
+          name="product"
+          readonly
+          required
+        >
 
         <label for="pickup-time">Pickup Time</label>
         <input
-          type="time"
+          type="datetime-local"
           id="pickup-time"
           name="pickup-time"
           required
@@ -478,10 +461,40 @@
           placeholder="Any special requests?"
         ></textarea>
 
-        <p class="payment-note">
-          Please contact us through Instagram DM and send your payment receipt
-          to confirm your order.
-        </p>
+        <!-- Payment Instructions -->
+        <details class="payment-instructions">
+          <summary>Payment Instructions (BenefitPay – Fawri+)</summary>
+
+          <div class="instructions-content">
+
+            <img
+              src="payment-qr.png"
+              alt="SHO SHO BenefitPay QR Code"
+              class="payment-qr"
+            >
+
+            <ol>
+              <li>Capture the QR code.</li>
+              <li>Open your BenefitPay app.</li>
+              <li>Choose Fawri+ and click on “Scan QR”.</li>
+              <li>
+                After opening the camera, click on the top right to upload a photo.
+              </li>
+              <li>
+                Select the QR code you captured from our website and complete the payment.
+              </li>
+              <li>
+                Kindly share the transaction with us on Instagram to confirm your order.
+              </li>
+            </ol>
+
+            <p class="note">
+              <strong>Note:</strong>
+              We will share the pickup location with you after receiving the payment transaction.
+            </p>
+
+          </div>
+        </details>
 
         <button
           type="submit"
@@ -507,170 +520,25 @@
   </footer>
 
   <script>
-    let cart = [];
-
-    const cartCount = document.getElementById("cartCount");
-    const cartItems = document.getElementById("cartItems");
-    const orderModal = document.getElementById("orderModal");
-    const orderDetails = document.getElementById("orderDetails");
-    const orderForm = document.getElementById("orderForm");
-    const openCartButton = document.getElementById("openCartButton");
-    const closeOrderButton = document.getElementById("closeOrderButton");
-
-    const addToCartButtons = document.querySelectorAll(".add-to-cart");
-
-    /*
-      إضافة المنتج إلى السلة فقط
-    */
-    addToCartButtons.forEach(function(button) {
-      button.addEventListener("click", function() {
-        const productName = button.getAttribute("data-product");
-        const price = button.getAttribute("data-price");
-
-        cart.push({
-          product: productName,
-          price: price,
-          personName: ""
-        });
-
-        updateCart();
-
-        const originalText = button.textContent;
-
-        button.textContent = "Added ✓";
-
-        setTimeout(function() {
-          button.textContent = originalText;
-        }, 1000);
-      });
-    });
-
-    /*
-      فتح السلة عند الضغط على View Cart
-    */
-    openCartButton.addEventListener("click", function() {
-      orderModal.classList.add("show");
+    function orderProduct(productName) {
+      document.getElementById("product").value = productName;
+      document.getElementById("orderModal").classList.add("show");
       document.body.style.overflow = "hidden";
-      updateCart();
-    });
-
-    /*
-      إغلاق السلة
-    */
-    closeOrderButton.addEventListener("click", function() {
-      closeOrderForm();
-    });
+    }
 
     function closeOrderForm() {
-      orderModal.classList.remove("show");
+      document.getElementById("orderModal").classList.remove("show");
       document.body.style.overflow = "auto";
     }
 
-    /*
-      تحديث محتوى السلة
-    */
-    function updateCart() {
-      cartCount.textContent = cart.length;
-      cartItems.innerHTML = "";
-
-      if (cart.length === 0) {
-        cartItems.innerHTML = `
-          <p class="empty-cart">Your cart is empty.</p>
-        `;
-
-        updateOrderDetails();
-        return;
-      }
-
-      cart.forEach(function(item, index) {
-        const cartItem = document.createElement("div");
-
-        cartItem.className = "cart-item";
-
-        const productName = document.createElement("strong");
-
-        productName.textContent =
-          `${index + 1}. ${item.product} - ${item.price}`;
-
-        const nameInput = document.createElement("input");
-
-        nameInput.type = "text";
-        nameInput.placeholder = "Name of the person";
-        nameInput.value = item.personName;
-        nameInput.required = true;
-
-        nameInput.addEventListener("input", function() {
-          item.personName = nameInput.value;
-          updateOrderDetails();
-        });
-
-        const removeButton = document.createElement("button");
-
-        removeButton.type = "button";
-        removeButton.className = "remove-item";
-        removeButton.textContent = "Remove";
-
-        removeButton.addEventListener("click", function() {
-          cart.splice(index, 1);
-          updateCart();
-        });
-
-        cartItem.appendChild(productName);
-        cartItem.appendChild(nameInput);
-        cartItem.appendChild(removeButton);
-
-        cartItems.appendChild(cartItem);
-      });
-
-      updateOrderDetails();
-    }
-
-    /*
-      تجهيز تفاصيل الطلب لإرسالها إلى Netlify
-    */
-    function updateOrderDetails() {
-      const details = cart.map(function(item, index) {
-        return `${index + 1}. ${item.product} - ${item.price} - Name: ${item.personName}`;
-      }).join("\n");
-
-      orderDetails.value = details;
-    }
-
-    /*
-      التحقق من الطلب قبل الإرسال
-    */
-    orderForm.addEventListener("submit", function(event) {
-      if (cart.length === 0) {
-        event.preventDefault();
-        alert("Please add at least one product to your cart.");
-        return;
-      }
-
-      const missingName = cart.some(function(item) {
-        return item.personName.trim() === "";
-      });
-
-      if (missingName) {
-        event.preventDefault();
-        alert("Please write the person's name for every product.");
-        return;
-      }
-
-      updateOrderDetails();
-    });
-
-    /*
-      إغلاق النافذة عند الضغط خارجها
-    */
     window.addEventListener("click", function(event) {
-      if (event.target === orderModal) {
+      const modal = document.getElementById("orderModal");
+
+      if (event.target === modal) {
         closeOrderForm();
       }
     });
 
-    /*
-      إغلاق النافذة بزر Escape
-    */
     document.addEventListener("keydown", function(event) {
       if (event.key === "Escape") {
         closeOrderForm();
