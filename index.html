@@ -149,6 +149,32 @@
       text-decoration: underline;
     }
 
+    /* Cart notification */
+    .cart-notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 2000;
+      max-width: 320px;
+      padding: 14px 18px;
+      border-radius: 12px;
+      background: #2f7a4a;
+      color: white;
+      font-size: 15px;
+      font-weight: bold;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-15px);
+      transition: 0.25s ease;
+    }
+
+    .cart-notification.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
     /* Order popup */
     .order-modal {
       display: none;
@@ -217,7 +243,61 @@
       resize: vertical;
     }
 
-    /* Payment Instructions */
+    /* Cart items */
+    .cart-item {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      padding: 14px;
+      margin-bottom: 12px;
+      background: #fff;
+      border: 1px solid #decfc5;
+      border-radius: 12px;
+    }
+
+    .cart-item strong {
+      color: #5a3c2c;
+      line-height: 1.4;
+    }
+
+    .cart-item input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #decfc5;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .remove-item {
+      border: none;
+      background: #f3d5df;
+      color: #a83262;
+      padding: 8px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .empty-cart {
+      color: #7a5a48;
+      text-align: center;
+      padding: 10px;
+    }
+
+    /* Total */
+    .cart-total {
+      margin: 15px 0;
+      padding: 15px;
+      background: #fff0f5;
+      border: 1px solid #ead8ce;
+      border-radius: 12px;
+      color: #2f7a4a;
+      text-align: center;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    /* Payment instructions */
     .payment-instructions {
       margin: 18px 0;
       border: 1px solid #ead8ce;
@@ -284,60 +364,6 @@
       margin-top: 5px;
     }
 
-    /* Cart items */
-    .cart-item {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 8px;
-      padding: 14px;
-      margin-bottom: 12px;
-      background: #fff;
-      border: 1px solid #decfc5;
-      border-radius: 12px;
-    }
-
-    .cart-item strong {
-      color: #5a3c2c;
-      line-height: 1.4;
-    }
-
-    .cart-item input {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #decfc5;
-      border-radius: 8px;
-      font-size: 14px;
-    }
-
-    .remove-item {
-      border: none;
-      background: #f3d5df;
-      color: #a83262;
-      padding: 8px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .empty-cart {
-      color: #7a5a48;
-      text-align: center;
-      padding: 10px;
-    }
-
-    /* Total منفصل */
-    .cart-total {
-      margin: 15px 0;
-      padding: 15px;
-      background: #fff0f5;
-      border: 1px solid #ead8ce;
-      border-radius: 12px;
-      color: #2f7a4a;
-      text-align: center;
-      font-size: 1.2rem;
-      font-weight: bold;
-    }
-
     @media (max-width: 600px) {
       h1 {
         font-size: 2.2rem;
@@ -352,11 +378,27 @@
         max-width: 250px;
         height: 250px;
       }
+
+      .cart-notification {
+        top: 15px;
+        left: 15px;
+        right: 15px;
+        max-width: none;
+        text-align: center;
+      }
     }
   </style>
 </head>
 
 <body>
+
+  <!-- إشعار إضافة المنتج -->
+  <div
+    id="cartNotification"
+    class="cart-notification"
+    role="status"
+    aria-live="polite"
+  ></div>
 
   <header class="hero">
     <img
@@ -518,7 +560,7 @@
           <p class="empty-cart">Your cart is empty.</p>
         </div>
 
-        <!-- خانة التوتل منفصلة -->
+        <!-- التوتل في خانة منفصلة -->
         <div id="cartTotal" class="cart-total">
           Total: 0 BD
         </div>
@@ -604,6 +646,7 @@
 
   <script>
     let cart = [];
+    let notificationTimeout;
 
     function addToCart(productName, price) {
       cart.push({
@@ -613,12 +656,35 @@
       });
 
       updateCart();
+
+      showCartNotification(
+        `✓ ${productName} added to your cart`
+      );
+    }
+
+    function showCartNotification(message) {
+      const notification =
+        document.getElementById("cartNotification");
+
+      notification.textContent = message;
+      notification.classList.add("show");
+
+      clearTimeout(notificationTimeout);
+
+      notificationTimeout = setTimeout(function() {
+        notification.classList.remove("show");
+      }, 2500);
     }
 
     function updateCart() {
-      const cartCount = document.getElementById("cartCount");
-      const cartItems = document.getElementById("cartItems");
-      const cartTotal = document.getElementById("cartTotal");
+      const cartCount =
+        document.getElementById("cartCount");
+
+      const cartItems =
+        document.getElementById("cartItems");
+
+      const cartTotal =
+        document.getElementById("cartTotal");
 
       cartCount.textContent = cart.length;
       cartItems.innerHTML = "";
@@ -639,7 +705,8 @@
         const itemPrice = parseFloat(item.price);
         total += itemPrice;
 
-        const itemElement = document.createElement("div");
+        const itemElement =
+          document.createElement("div");
 
         itemElement.className = "cart-item";
 
@@ -663,13 +730,15 @@
           </button>
         `;
 
-        const nameInput = itemElement.querySelector("input");
+        const nameInput =
+          itemElement.querySelector("input");
 
         nameInput.addEventListener("input", function() {
           updatePersonName(index, this.value);
         });
 
-        const removeButton = itemElement.querySelector(".remove-item");
+        const removeButton =
+          itemElement.querySelector(".remove-item");
 
         removeButton.addEventListener("click", function() {
           removeFromCart(index);
@@ -678,7 +747,8 @@
         cartItems.appendChild(itemElement);
       });
 
-      cartTotal.textContent = `Total: ${total.toFixed(1)} BD`;
+      cartTotal.textContent =
+        `Total: ${total.toFixed(1)} BD`;
 
       updateOrderDetails();
     }
@@ -689,12 +759,19 @@
     }
 
     function removeFromCart(index) {
+      const removedProduct = cart[index].product;
+
       cart.splice(index, 1);
       updateCart();
+
+      showCartNotification(
+        `✓ ${removedProduct} removed from your cart`
+      );
     }
 
     function updateOrderDetails() {
-      const orderDetails = document.getElementById("orderDetails");
+      const orderDetails =
+        document.getElementById("orderDetails");
 
       const total = cart.reduce(function(sum, item) {
         return sum + parseFloat(item.price);
@@ -706,44 +783,61 @@
 
       orderDetails.value =
         details +
-        (cart.length > 0
-          ? `\n\nTotal: ${total.toFixed(1)} BD`
-          : "");
+        (
+          cart.length > 0
+            ? `\n\nTotal: ${total.toFixed(1)} BD`
+            : ""
+        );
     }
 
     function openCart() {
-      document.getElementById("orderModal").classList.add("show");
+      document
+        .getElementById("orderModal")
+        .classList.add("show");
+
       document.body.style.overflow = "hidden";
+
       updateCart();
     }
 
     function closeOrderForm() {
-      document.getElementById("orderModal").classList.remove("show");
+      document
+        .getElementById("orderModal")
+        .classList.remove("show");
+
       document.body.style.overflow = "auto";
     }
 
-    document.getElementById("orderForm").addEventListener("submit", function(event) {
-      if (cart.length === 0) {
-        event.preventDefault();
-        alert("Please add at least one product to your cart.");
-        return;
-      }
+    document
+      .getElementById("orderForm")
+      .addEventListener("submit", function(event) {
+        if (cart.length === 0) {
+          event.preventDefault();
 
-      const missingName = cart.some(function(item) {
-        return item.personName.trim() === "";
+          alert("Please add at least one product to your cart.");
+          return;
+        }
+
+        const missingName = cart.some(function(item) {
+          return item.personName.trim() === "";
+        });
+
+        if (missingName) {
+          event.preventDefault();
+
+          alert(
+            "Please write the person's name for every product."
+          );
+
+          return;
+        }
+
+        updateOrderDetails();
       });
 
-      if (missingName) {
-        event.preventDefault();
-        alert("Please write the person's name for every product.");
-        return;
-      }
-
-      updateOrderDetails();
-    });
-
     window.addEventListener("click", function(event) {
-      const modal = document.getElementById("orderModal");
+      const modal =
+        document.getElementById("orderModal");
 
       if (event.target === modal) {
         closeOrderForm();
