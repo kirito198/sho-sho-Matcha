@@ -325,6 +325,19 @@
       padding: 10px;
     }
 
+    /* Total منفصل */
+    .cart-total {
+      margin: 15px 0;
+      padding: 15px;
+      background: #fff0f5;
+      border: 1px solid #ead8ce;
+      border-radius: 12px;
+      color: #2f7a4a;
+      text-align: center;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
     @media (max-width: 600px) {
       h1 {
         font-size: 2.2rem;
@@ -505,6 +518,11 @@
           <p class="empty-cart">Your cart is empty.</p>
         </div>
 
+        <!-- خانة التوتل منفصلة -->
+        <div id="cartTotal" class="cart-total">
+          Total: 0 BD
+        </div>
+
         <textarea
           id="orderDetails"
           name="order-details"
@@ -600,20 +618,27 @@
     function updateCart() {
       const cartCount = document.getElementById("cartCount");
       const cartItems = document.getElementById("cartItems");
+      const cartTotal = document.getElementById("cartTotal");
 
       cartCount.textContent = cart.length;
       cartItems.innerHTML = "";
+
+      let total = 0;
 
       if (cart.length === 0) {
         cartItems.innerHTML = `
           <p class="empty-cart">Your cart is empty.</p>
         `;
 
+        cartTotal.textContent = "Total: 0 BD";
         updateOrderDetails();
         return;
       }
 
       cart.forEach(function(item, index) {
+        const itemPrice = parseFloat(item.price);
+        total += itemPrice;
+
         const itemElement = document.createElement("div");
 
         itemElement.className = "cart-item";
@@ -653,6 +678,8 @@
         cartItems.appendChild(itemElement);
       });
 
+      cartTotal.textContent = `Total: ${total.toFixed(1)} BD`;
+
       updateOrderDetails();
     }
 
@@ -669,11 +696,19 @@
     function updateOrderDetails() {
       const orderDetails = document.getElementById("orderDetails");
 
+      const total = cart.reduce(function(sum, item) {
+        return sum + parseFloat(item.price);
+      }, 0);
+
       const details = cart.map(function(item, index) {
         return `${index + 1}. ${item.product} - ${item.price} - Name: ${item.personName}`;
       }).join("\n");
 
-      orderDetails.value = details;
+      orderDetails.value =
+        details +
+        (cart.length > 0
+          ? `\n\nTotal: ${total.toFixed(1)} BD`
+          : "");
     }
 
     function openCart() {
