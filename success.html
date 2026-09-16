@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -52,6 +52,10 @@
       text-align: left;
     }
 
+    html[dir="rtl"] .payment-instructions {
+      text-align: right;
+    }
+
     .payment-instructions summary {
       padding: 14px 16px;
       color: #d94f8b;
@@ -69,6 +73,10 @@
       content: "+";
       float: right;
       font-size: 20px;
+    }
+
+    html[dir="rtl"] .payment-instructions summary::after {
+      float: left;
     }
 
     .payment-instructions[open] summary::after {
@@ -98,12 +106,21 @@
       margin: 0 0 12px;
     }
 
+    html[dir="rtl"] .instructions-content ol {
+      padding-left: 0;
+      padding-right: 25px;
+    }
+
     .note {
       padding: 10px 12px;
       border-radius: 10px;
       background: #fff7f3;
       color: #5a3c2c !important;
       text-align: left;
+    }
+
+    html[dir="rtl"] .note {
+      text-align: right;
     }
 
     .instagram-btn {
@@ -130,19 +147,21 @@
 
 <body>
   <div class="box">
-    <h1>Thank You!</h1>
+    <h1 id="thankYouTitle">Thank You!</h1>
 
-    <p>
+    <p id="successMessage">
       Your order has been submitted successfully.
     </p>
 
-    <p>
+    <p id="paymentMessage">
       Please complete the payment using BenefitPay – Fawri+,
       then send the transaction confirmation to us through Instagram.
     </p>
 
     <details class="payment-instructions" open>
-      <summary>Payment Instructions (BenefitPay – Fawri+)</summary>
+      <summary id="paymentTitle">
+        Payment Instructions (BenefitPay – Fawri+)
+      </summary>
 
       <div class="instructions-content">
         <img
@@ -151,7 +170,7 @@
           class="payment-qr"
         >
 
-        <ol>
+        <ol id="paymentSteps">
           <li>Capture the QR code.</li>
           <li>Open your BenefitPay app.</li>
           <li>Choose Fawri+ and click on “Scan QR”.</li>
@@ -166,7 +185,7 @@
           </li>
         </ol>
 
-        <p class="note">
+        <p class="note" id="paymentNote">
           <strong>Note:</strong>
           We will share the pickup location with you after receiving the payment transaction.
         </p>
@@ -179,8 +198,70 @@
       target="_blank"
       rel="noopener noreferrer"
     >
-      Contact us on Instagram
+      <span id="instagramText">Contact us on Instagram</span>
     </a>
   </div>
+
+  <script>
+    const isArabic = localStorage.getItem("siteLanguage") === "ar";
+
+    document.documentElement.lang = isArabic ? "ar" : "en";
+    document.documentElement.dir = isArabic ? "rtl" : "ltr";
+
+    document.getElementById("thankYouTitle").textContent =
+      isArabic
+        ? "شكرًا لك!"
+        : "Thank You!";
+
+    document.getElementById("successMessage").textContent =
+      isArabic
+        ? "تم إرسال طلبك بنجاح."
+        : "Your order has been submitted successfully.";
+
+    document.getElementById("paymentMessage").textContent =
+      isArabic
+        ? "يرجى إكمال الدفع باستخدام BenefitPay – فوري+، ثم إرسال تأكيد التحويل لنا عبر الإنستغرام."
+        : "Please complete the payment using BenefitPay – Fawri+, then send the transaction confirmation to us through Instagram.";
+
+    document.getElementById("paymentTitle").textContent =
+      isArabic
+        ? "تعليمات الدفع (BenefitPay – فوري+)"
+        : "Payment Instructions (BenefitPay – Fawri+)";
+
+    document.getElementById("paymentSteps").innerHTML =
+      isArabic
+        ? `
+          <li>صوّر رمز QR.</li>
+          <li>افتح تطبيق BenefitPay.</li>
+          <li>اختار فوري+ واضغط على مسح QR.</li>
+          <li>بعد فتح الكاميرا، اضغط أعلى اليمين لرفع صورة.</li>
+          <li>اختار صورة رمز QR من موقعنا وأكمل عملية الدفع.</li>
+          <li>أرسل تأكيد التحويل لنا عبر الإنستغرام لتأكيد طلبك.</li>
+        `
+        : `
+          <li>Capture the QR code.</li>
+          <li>Open your BenefitPay app.</li>
+          <li>Choose Fawri+ and click on “Scan QR”.</li>
+          <li>After opening the camera, click on the top right to upload a photo.</li>
+          <li>Select the QR code you captured from our website and complete the payment.</li>
+          <li>Kindly share the transaction with us on Instagram to confirm your order.</li>
+        `;
+
+    document.getElementById("paymentNote").innerHTML =
+      isArabic
+        ? `
+          <strong>ملاحظة:</strong>
+          سنرسل لك موقع الاستلام بعد استلام تأكيد التحويل.
+        `
+        : `
+          <strong>Note:</strong>
+          We will share the pickup location with you after receiving the payment transaction.
+        `;
+
+    document.getElementById("instagramText").textContent =
+      isArabic
+        ? "تواصل معنا عبر الإنستغرام"
+        : "Contact us on Instagram";
+  </script>
 </body>
 </html>
