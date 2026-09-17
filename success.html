@@ -143,7 +143,9 @@
       outline-offset: 3px;
     }
 .invoice-section {
-  display: none;
+  display: block;
+}
+
   margin-top: 25px;
   padding-top: 22px;
   border-top: 1px solid #ead8ce;
@@ -444,14 +446,13 @@ loadInvoice();
       return;
     }
 
-    if (
-      !invoice.items ||
-      !Array.isArray(invoice.items) ||
-      invoice.items.length === 0
-    ) {
-      console.error("لا توجد منتجات داخل الفاتورة");
-      return;
-    }
+if (
+  !invoice.items ||
+  !Array.isArray(invoice.items)
+) {
+  console.error("بيانات المنتجات غير موجودة");
+  return;
+}
 
     const invoiceSection =
       document.getElementById("invoiceSection");
@@ -548,50 +549,56 @@ loadInvoice();
 
 
   async function downloadInvoicePDF() {
-    const invoiceSection =
-      document.getElementById("invoiceSection");
+  const invoiceSection =
+    document.getElementById("invoiceSection");
 
-    if (
-      !invoiceSection ||
-      invoiceSection.style.display === "none"
-    ) {
-      alert(
-        "Invoice data is not available."
-      );
+  if (!invoiceSection) {
+    alert("لم يتم العثور على الفاتورة");
+    return;
+  }
 
-      return;
-    }
+  if (typeof html2pdf === "undefined") {
+    alert("مكتبة PDF غير محملة");
+    return;
+  }
 
-    if (
-      typeof html2pdf === "undefined"
-    ) {
-      alert(
-        "PDF library was not loaded."
-      );
+  // إظهار الفاتورة قبل إنشاء PDF
+  invoiceSection.style.display = "block";
 
-      return;
-    }
-
+  try {
     await new Promise(function (resolve) {
-      setTimeout(resolve, 300);
+      setTimeout(resolve, 1000);
     });
 
-    try {
-      await html2pdf()
-        .set(getInvoicePDFOptions())
-        .from(invoiceSection)
-        .save();
-    } catch (error) {
-      console.error(
-        "PDF creation error:",
-        error
-      );
+    await html2pdf()
+      .set({
+        margin: 10,
+        filename: "ShoSho-Matcha-Invoice.pdf",
+        image: {
+          type: "jpeg",
+          quality: 0.98
+        },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          logging: true,
+          backgroundColor: "#ffffff"
+        },
+        jsPDF: {
+          unit: "mm",
+          format: "a4",
+          orientation: "portrait"
+        }
+      })
+      .from(invoiceSection)
+      .save();
 
-      alert(
-        "حدث خطأ أثناء إنشاء ملف PDF"
-      );
-    }
+  } catch (error) {
+    console.error("PDF Error:", error);
+    alert("حدث خطأ أثناء إنشاء PDF");
   }
+}
+
 
 
   async function shareInvoicePDF() {
