@@ -221,7 +221,6 @@ html[dir="rtl"] .invoice-section {
 }
 
   </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 
 <body>
@@ -344,8 +343,9 @@ html[dir="rtl"] .invoice-section {
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    const savedLanguage =
-      localStorage.getItem("siteLanguage") || "en";
+   const savedLanguage =
+  localStorage.getItem("siteLanguage") || "en";
+
 
     const isArabic = savedLanguage === "ar";
 
@@ -406,12 +406,16 @@ html[dir="rtl"] .invoice-section {
           We will share the pickup location with you after receiving the payment transaction.
         `;
 
-    document.getElementById("instagramText").textContent =
-      isArabic
-        ? "تواصل معنا عبر الإنستغرام"
-        : "Contact us on Instagram";
+document.getElementById("instagramText").textContent =
+  isArabic
+    ? "تواصل معنا عبر الإنستغرام"
+    : "Contact us on Instagram";
 
-    loadInvoice();
+document.getElementById("invoiceTitle").textContent =
+  isArabic ? "فاتورتك" : "Your Invoice";
+
+loadInvoice();
+
   });
 
 
@@ -678,114 +682,6 @@ html[dir="rtl"] .invoice-section {
   }
 </script>
 
-<script>
-  const savedInvoice = localStorage.getItem("shoshoInvoice");
-
-  if (savedInvoice) {
-    const invoice = JSON.parse(savedInvoice);
-
-    document.getElementById("invoiceSection").style.display = "block";
-
-    document.getElementById("invoiceNumber").textContent =
-      invoice.invoiceNumber || "-";
-
-    document.getElementById("invoiceDate").textContent =
-      invoice.date || "-";
-
-    document.getElementById("invoiceCustomer").textContent =
-      invoice.customerName || "-";
-
-    const invoiceItems =
-      document.getElementById("invoiceItems");
-
-    invoiceItems.innerHTML = "";
-
-    invoice.items.forEach(function (item) {
-      invoiceItems.innerHTML += `
-        <tr>
-          <td>${item.name}</td>
-          <td>${item.quantity}</td>
-          <td>${Number(item.price).toFixed(2)} BD</td>
-          <td>${Number(item.total).toFixed(2)} BD</td>
-        </tr>
-      `;
-    });
-
-    document.getElementById("invoiceTotal").textContent =
-      Number(invoice.grandTotal).toFixed(2) + " BD";
-  }
-
-  function getInvoicePDFOptions() {
-    return {
-      margin: 8,
-      filename: "ShoSho-Matcha-Invoice.pdf",
-      image: {
-        type: "jpeg",
-        quality: 0.98
-      },
-      html2canvas: {
-        scale: 2,
-        useCORS: true
-      },
-      jsPDF: {
-        unit: "mm",
-        format: "a4",
-        orientation: "portrait"
-      }
-    };
-  }
-
-  function downloadInvoicePDF() {
-    const invoiceSection =
-      document.getElementById("invoiceSection");
-
-    html2pdf()
-      .set(getInvoicePDFOptions())
-      .from(invoiceSection)
-      .save();
-  }
-
-  async function shareInvoicePDF() {
-    const invoiceSection =
-      document.getElementById("invoiceSection");
-
-    const pdfBlob = await html2pdf()
-      .set(getInvoicePDFOptions())
-      .from(invoiceSection)
-      .outputPdf("blob");
-
-    const pdfFile = new File(
-      [pdfBlob],
-      "ShoSho-Matcha-Invoice.pdf",
-      {
-        type: "application/pdf"
-      }
-    );
-
-    if (
-      navigator.share &&
-      navigator.canShare &&
-      navigator.canShare({
-        files: [pdfFile]
-      })
-    ) {
-      await navigator.share({
-        title: "ShoSho Matcha Invoice",
-        text: "ShoSho Matcha Invoice",
-        files: [pdfFile]
-      });
-    } else {
-      const pdfUrl = URL.createObjectURL(pdfBlob);
-      const link = document.createElement("a");
-
-      link.href = pdfUrl;
-      link.download = "ShoSho-Matcha-Invoice.pdf";
-      link.click();
-
-      URL.revokeObjectURL(pdfUrl);
-    }
-  }
-</script>
 
 </body>
 </html>
