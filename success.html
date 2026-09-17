@@ -142,7 +142,7 @@
       outline-offset: 3px;
     }
 
-    /* 🎀 تصميم الفاتورة وإصلاح نصوص الـ PDF 🎀 */
+    /* 🎀 تصميم الفاتورة وتثبيت تنسيق PDF 🎀 */
     .invoice-section {
       display: block;
       margin-top: 25px;
@@ -207,11 +207,10 @@
       vertical-align: middle;
     }
 
-    /* حماية النصوص والعناوين من الانعكاس واللخبطة في PDF */
-    .pdf-safe-text {
+    /* حل مشكلة عكس المبالغ والكلمات المركبة */
+    .bdi-text {
       display: inline-block;
-      white-space: nowrap;
-      direction: inherit;
+      unicode-bidi: isolate;
     }
 
     .price-num {
@@ -390,7 +389,7 @@
         <tfoot>
           <tr>
             <td colspan="3">
-              <strong id="labelGrandTotal" class="pdf-safe-text">Grand Total</strong>
+              <strong id="labelGrandTotal"><bdi class="bdi-text">Grand Total</bdi></strong>
             </td>
             <td><span id="invoiceTotal" class="price-num">0.00 BD</span></td>
           </tr>
@@ -398,8 +397,8 @@
       </table>
 
       <div class="receipt-footer">
-        <p id="footerLoveText" class="pdf-safe-text">Made with ❤️ for you</p>
-        <p id="footerThanksText" class="pdf-safe-text">✨ Thank you for your order! ✨</p>
+        <p id="footerLoveText"><bdi class="bdi-text">Made with ❤️ for you</bdi></p>
+        <p id="footerThanksText"><bdi class="bdi-text">✨ Thank you for your order! ✨</bdi></p>
       </div>
 
       <div class="invoice-buttons">
@@ -470,7 +469,7 @@
 
         const productCell = document.createElement('td');
         productCell.className = 'product-cell';
-        productCell.innerHTML = `<div>${name}</div>${person}`;
+        productCell.innerHTML = `<div><bdi class="bdi-text">${name}</bdi></div>${person}`;
         row.appendChild(productCell);
 
         const quantityCell = document.createElement('td');
@@ -620,11 +619,11 @@
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-      // فحص حاسم للغة: افتراضياً English، ولا يتحول للعربي إلا عند التأكد التام
-      const savedLang = localStorage.getItem("siteLanguage") || localStorage.getItem("lang");
-      const isArabic = (savedLang === "ar" || savedLang === "arabic");
+      // فحص صارم لمنع التحول للغة العربية افتراضياً
+      const rawLang = localStorage.getItem("siteLanguage") || localStorage.getItem("lang");
+      const isExplicitArabic = (rawLang && String(rawLang).trim().toLowerCase() === "ar");
 
-      if (isArabic) {
+      if (isExplicitArabic) {
         document.documentElement.lang = "ar";
         document.documentElement.dir = "rtl";
 
@@ -652,12 +651,13 @@
         document.getElementById("thQty").textContent = "الكمية";
         document.getElementById("thPrice").textContent = "السعر";
         document.getElementById("thTotal").textContent = "المجموع";
-        document.getElementById("labelGrandTotal").textContent = "المجموع الكلي";
+        document.getElementById("labelGrandTotal").innerHTML = '<bdi class="bdi-text">المجموع الكلي</bdi>';
         document.getElementById("downloadPdfBtn").textContent = "تحميل الفاتورة PDF";
         document.getElementById("sharePdfBtn").textContent = "مشاركة الفاتورة PDF";
-        document.getElementById("footerLoveText").textContent = "صُنع بـ ❤️ لأجلك";
-        document.getElementById("footerThanksText").textContent = "✨ شكراً لطلبك من شوشو ماتشا! ✨";
+        document.getElementById("footerLoveText").innerHTML = '<bdi class="bdi-text">صُنع بـ ❤️ لأجلك</bdi>';
+        document.getElementById("footerThanksText").innerHTML = '<bdi class="bdi-text">✨ شكراً لطلبك من شوشو ماتشا! ✨</bdi>';
       } else {
+        // فرض الإنجليزية بدون تهاون
         document.documentElement.lang = "en";
         document.documentElement.dir = "ltr";
       }
