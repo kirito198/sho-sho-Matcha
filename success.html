@@ -142,11 +142,14 @@
       outline-offset: 3px;
     }
 
+    /* 🎀 تصميم قسم الفاتورة كإيصال أنيق 🎀 */
     .invoice-section {
       display: block;
       margin-top: 25px;
-      padding-top: 22px;
-      border-top: 1px solid #ead8ce;
+      padding: 20px 15px;
+      border: 1px solid #ead8ce;
+      border-radius: 16px;
+      background: #ffffff;
       text-align: left;
     }
 
@@ -154,10 +157,25 @@
       text-align: right;
     }
 
+    /* الشريطة العلوية */
+    .receipt-ribbon {
+      background: linear-gradient(135deg, #f7d6e0, #fce4ec);
+      color: #d94f8b;
+      text-align: center;
+      font-weight: bold;
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: 15px;
+      margin-bottom: 15px;
+      letter-spacing: 0.5px;
+    }
+
     .invoice-section h2 {
       color: #d94f8b;
       margin-top: 0;
+      margin-bottom: 12px;
       text-align: center;
+      font-size: 20px;
     }
 
     .invoice-info {
@@ -193,6 +211,21 @@
     .invoice-table tfoot td {
       color: #d94f8b;
       font-size: 15px;
+    }
+
+    /* ❤️ تذييل الفاتورة ❤️ */
+    .receipt-footer {
+      text-align: center;
+      margin-top: 18px;
+      padding-top: 12px;
+      border-top: 1px dashed #ead8ce;
+      font-size: 13px;
+      color: #7a5a48;
+    }
+
+    .receipt-footer p {
+      margin: 3px 0;
+      font-weight: 500;
     }
 
     .invoice-buttons {
@@ -297,6 +330,11 @@
     </a>
 
     <div id="invoiceSection" class="invoice-section">
+      <!-- 🎀 شريطة أعلى الفاتورة 🎀 -->
+      <div class="receipt-ribbon">
+        🎀 SHO SHO MATCHA 🎀
+      </div>
+
       <h2 id="invoiceTitle">Your Invoice</h2>
 
       <div class="invoice-info">
@@ -338,6 +376,12 @@
         </tfoot>
       </table>
 
+      <!-- ❤️ تذييل الفاتورة السفلي ❤️ -->
+      <div class="receipt-footer">
+        <p id="footerLoveText">Made with ❤️ for you</p>
+        <p id="footerThanksText">✨ Thank you for your order! ✨</p>
+      </div>
+
       <div class="invoice-buttons">
         <button
           type="button"
@@ -369,7 +413,6 @@
       if (raw instanceof Date) d = raw;
       else if (!isNaN(Number(raw))) d = new Date(Number(raw));
       else {
-        // دعم التواريخ بنسق DD/MM/YYYY
         const parts = String(raw).split('/');
         if (parts.length === 3) {
           d = new Date(parts[2], parts[1] - 1, parts[0]);
@@ -472,95 +515,90 @@
       }
     }
 
-function getInvoicePDFOptions() {
-  return {
-    margin: [10, 10, 10, 10],
-    filename: (document.getElementById('invoiceNumber')?.textContent || 'ShoSho-Matcha-Invoice') + '.pdf',
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: {
-      scale: 2,
-      useCORS: true,
-      allowTaint: true,
-      backgroundColor: '#ffffff',
-      scrollY: 0,
-      scrollX: 0
-    },
-    pagebreak: { mode: ['css', 'legacy'] },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-  };
-}
-
-async function createInvoicePDF() {
-  const invoiceSection = document.getElementById('invoiceSection');
-  if (!invoiceSection) {
-    throw new Error('Invoice section not found');
-  }
-
-  // 1. إخفاء الأزرار مؤقتاً لكي لا تظهر في ملف الـ PDF
-  const buttons = invoiceSection.querySelector('.invoice-buttons');
-  if (buttons) buttons.style.display = 'none';
-
-  try {
-    const opt = getInvoicePDFOptions();
-    // 2. التصوير المباشر من القسم الظاهر بالصفحة
-    return await html2pdf().set(opt).from(invoiceSection).outputPdf('blob');
-  } finally {
-    // 3. إعادة إظهار الأزرار فوراً
-    if (buttons) buttons.style.display = 'flex';
-  }
-}
-
-async function downloadInvoicePDF() {
-  const btn = document.getElementById('downloadPdfBtn');
-  if (btn) btn.disabled = true;
-
-  try {
-    const pdfBlob = await createInvoicePDF();
-    const pdfUrl = URL.createObjectURL(pdfBlob);
-    const link = document.createElement('a');
-    link.href = pdfUrl;
-    link.download = (document.getElementById('invoiceNumber')?.textContent || 'ShoSho-Matcha-Invoice') + '.pdf';
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    setTimeout(() => URL.revokeObjectURL(pdfUrl), 1000);
-  } catch (error) {
-    console.error('PDF Download Error:', error);
-    alert(document.documentElement.lang === 'ar' ? 'حدث خطأ أثناء تحميل الفاتورة' : 'Error downloading PDF');
-  } finally {
-    if (btn) btn.disabled = false;
-  }
-}
-
-async function shareInvoicePDF() {
-  const btn = document.getElementById('sharePdfBtn');
-  if (btn) btn.disabled = true;
-
-  try {
-    const pdfBlob = await createInvoicePDF();
-    const fileName = (document.getElementById('invoiceNumber')?.textContent || 'ShoSho-Matcha-Invoice') + '.pdf';
-    const pdfFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
-
-    if (navigator.share && navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
-      await navigator.share({
-        title: 'ShoSho Matcha Invoice',
-        text: 'Your order invoice from ShoSho Matcha',
-        files: [pdfFile]
-      });
-    } else {
-      // إذا كان المتصفح لا يدعم المشاركة المباشرة ينزل الفاتورة تلقائياً
-      downloadInvoicePDF();
+    function getInvoicePDFOptions() {
+      return {
+        margin: [10, 10, 10, 10],
+        filename: (document.getElementById('invoiceNumber')?.textContent || 'ShoSho-Matcha-Invoice') + '.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          scrollY: 0,
+          scrollX: 0
+        },
+        pagebreak: { mode: ['css', 'legacy'] },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
     }
-  } catch (error) {
-    console.error('PDF Share Error:', error);
-    alert(document.documentElement.lang === 'ar' ? 'حدث خطأ أثناء مشاركة الفاتورة' : 'Error sharing PDF');
-  } finally {
-    if (btn) btn.disabled = false;
-  }
-}
+
+    async function createInvoicePDF() {
+      const invoiceSection = document.getElementById('invoiceSection');
+      if (!invoiceSection) {
+        throw new Error('Invoice section not found');
+      }
+
+      const buttons = invoiceSection.querySelector('.invoice-buttons');
+      if (buttons) buttons.style.display = 'none';
+
+      try {
+        const opt = getInvoicePDFOptions();
+        return await html2pdf().set(opt).from(invoiceSection).outputPdf('blob');
+      } finally {
+        if (buttons) buttons.style.display = 'flex';
+      }
+    }
+
+    async function downloadInvoicePDF() {
+      const btn = document.getElementById('downloadPdfBtn');
+      if (btn) btn.disabled = true;
+
+      try {
+        const pdfBlob = await createInvoicePDF();
+        const pdfUrl = URL.createObjectURL(pdfBlob);
+        const link = document.createElement('a');
+        link.href = pdfUrl;
+        link.download = (document.getElementById('invoiceNumber')?.textContent || 'ShoSho-Matcha-Invoice') + '.pdf';
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(pdfUrl), 1000);
+      } catch (error) {
+        console.error('PDF Download Error:', error);
+        alert(document.documentElement.lang === 'ar' ? 'حدث خطأ أثناء تحميل الفاتورة' : 'Error downloading PDF');
+      } finally {
+        if (btn) btn.disabled = false;
+      }
+    }
+
+    async function shareInvoicePDF() {
+      const btn = document.getElementById('sharePdfBtn');
+      if (btn) btn.disabled = true;
+
+      try {
+        const pdfBlob = await createInvoicePDF();
+        const fileName = (document.getElementById('invoiceNumber')?.textContent || 'ShoSho-Matcha-Invoice') + '.pdf';
+        const pdfFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
+
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+          await navigator.share({
+            title: 'ShoSho Matcha Invoice',
+            text: 'Your order invoice from ShoSho Matcha',
+            files: [pdfFile]
+          });
+        } else {
+          downloadInvoicePDF();
+        }
+      } catch (error) {
+        console.error('PDF Share Error:', error);
+        alert(document.documentElement.lang === 'ar' ? 'حدث خطأ أثناء مشاركة الفاتورة' : 'Error sharing PDF');
+      } finally {
+        if (btn) btn.disabled = false;
+      }
+    }
 
     document.addEventListener('DOMContentLoaded', function () {
-      // 1. قراءة اللغة وتطبيق الترجمة
       const savedLang = localStorage.getItem("siteLanguage") || "en";
       const isArabic = savedLang === "ar";
 
@@ -584,7 +622,7 @@ async function shareInvoicePDF() {
 
         document.getElementById("paymentNote").innerHTML = `<strong>ملاحظة:</strong> سنرسل لك موقع الاستلام بعد استلام عملية التحويل.`;
         document.getElementById("instagramText").textContent = "تواصل معنا عبر الإنستغرام";
-        document.getElementById("invoiceTitle").textContent = "فاتورة  الطلب";
+        document.getElementById("invoiceTitle").textContent = "فاتورة الطلب";
         document.getElementById("labelInvNo").textContent = "رقم الفاتورة:";
         document.getElementById("labelDate").textContent = "التاريخ:";
         document.getElementById("labelCustomer").textContent = "العميل:";
@@ -592,12 +630,15 @@ async function shareInvoicePDF() {
         document.getElementById("thQty").textContent = "الكمية";
         document.getElementById("thPrice").textContent = "السعر";
         document.getElementById("thTotal").textContent = "المجموع";
-        document.getElementById("labelGrandTotal").textContent = "المجموع  الكلي";
+        document.getElementById("labelGrandTotal").textContent = "المجموع الكلي";
         document.getElementById("downloadPdfBtn").textContent = "تحميل الفاتورة PDF";
         document.getElementById("sharePdfBtn").textContent = "مشاركة الفاتورة PDF";
+        
+        // ترجمة التذييل للعربية
+        document.getElementById("footerLoveText").textContent = "صُنع بـ ❤️ لأجلك";
+        document.getElementById("footerThanksText").textContent = "✨ شكراً لطلبك من شوشو ماتشا! ✨";
       }
 
-      // 2. تحميل وقراءة الفاتورة
       loadInvoice();
     });
   </script>
