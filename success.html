@@ -493,8 +493,16 @@
       document.getElementById("invoiceDate").textContent =
         invoice.date || "-";
 
-      document.getElementById("invoiceCustomer").textContent =
-        invoice.customerName || "-";
+      const invoiceDate = new Date(invoice.date);
+
+document.getElementById("invoiceDate").textContent =
+  invoiceDate.toLocaleDateString("en-US", {
+    numberingSystem: "latn",
+    year: "numeric",
+    month: "long",
+    day: "numeric"
+  });
+
 
       invoiceItems.innerHTML = "";
 
