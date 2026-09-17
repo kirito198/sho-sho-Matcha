@@ -1049,42 +1049,30 @@ document.querySelectorAll(".card .btn").forEach(function(button) {
 
   if (orderForm) {
     orderForm.addEventListener("submit", function () {
-      const orderItems = [];
+      const currentCart =
+        typeof cart !== "undefined" ? cart : [];
 
-      document.querySelectorAll(".cart-item, .item").forEach(item => {
-        const nameElement =
-          item.querySelector(".product-name") ||
-          item.querySelector(".product-title");
-
-        const quantityElement =
-          item.querySelector(".quantity") ||
-          item.querySelector(".product-quantity");
-
-        const priceElement =
-          item.querySelector(".price") ||
-          item.querySelector(".product-price");
-
-        const name =
-          nameElement?.value ||
-          nameElement?.textContent?.trim() ||
-          "";
-
-        const quantity =
-          Number(quantityElement?.value) || 1;
+      const orderItems = currentCart.map(function (item) {
+        const productName =
+          item.name ||
+          item.productName ||
+          item.title ||
+          "Product";
 
         const price =
-          Number(priceElement?.value) ||
-          Number(priceElement?.textContent?.replace(/[^\d.]/g, "")) ||
-          0;
+          Number(item.price) || 0;
 
-        if (name && price > 0) {
-          orderItems.push({
-            name: name,
-            quantity: quantity,
-            price: price,
-            total: quantity * price
-          });
-        }
+        const quantity =
+          Number(item.quantity) ||
+          Number(item.qty) ||
+          1;
+
+        return {
+          name: productName,
+          quantity: quantity,
+          price: price,
+          total: price * quantity
+        };
       });
 
       const total = orderItems.reduce(function (sum, item) {
