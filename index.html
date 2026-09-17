@@ -1044,6 +1044,84 @@ document.querySelectorAll(".card .btn").forEach(function(button) {
   });
 
   </script>
+<script>
+  const orderForm = document.querySelector("form");
+
+  if (orderForm) {
+    orderForm.addEventListener("submit", function () {
+      const orderItems = [];
+
+      document.querySelectorAll(".cart-item, .item").forEach(item => {
+        const nameElement =
+          item.querySelector(".product-name") ||
+          item.querySelector(".product-title");
+
+        const quantityElement =
+          item.querySelector(".quantity") ||
+          item.querySelector(".product-quantity");
+
+        const priceElement =
+          item.querySelector(".price") ||
+          item.querySelector(".product-price");
+
+        const name =
+          nameElement?.value ||
+          nameElement?.textContent?.trim() ||
+          "";
+
+        const quantity =
+          Number(quantityElement?.value) || 1;
+
+        const price =
+          Number(priceElement?.value) ||
+          Number(priceElement?.textContent?.replace(/[^\d.]/g, "")) ||
+          0;
+
+        if (name && price > 0) {
+          orderItems.push({
+            name: name,
+            quantity: quantity,
+            price: price,
+            total: quantity * price
+          });
+        }
+      });
+
+      const total = orderItems.reduce(function (sum, item) {
+        return sum + item.total;
+      }, 0);
+
+      const customerName =
+        document.querySelector("#customerName")?.value ||
+        document.querySelector('[name="customer-name"]')?.value ||
+        document.querySelector('[name="name"]')?.value ||
+        "-";
+
+      const instagram =
+        document.querySelector("#instagramAccount")?.value ||
+        document.querySelector('[name="instagram"]')?.value ||
+        "-";
+
+      const order = {
+        invoiceNumber: "INV-" + Date.now().toString().slice(-6),
+        date: new Date().toLocaleDateString("en-GB"),
+        customerName: customerName,
+        instagram: instagram,
+        paymentMethod: "Order Payment",
+        items: orderItems,
+        subtotal: total,
+        discount: 0,
+        tax: 0,
+        grandTotal: total
+      };
+
+      localStorage.setItem(
+        "shoshoInvoice",
+        JSON.stringify(order)
+      );
+    });
+  }
+</script>
 
 </body>
 </html>
