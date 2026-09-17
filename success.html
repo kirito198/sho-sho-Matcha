@@ -489,36 +489,46 @@
       };
     }
 
-    async function createInvoicePDF() {
-      const invoiceSection = document.getElementById('invoiceSection');
-      if (!invoiceSection) {
-        throw new Error('Invoice section not found');
-      }
+async function createInvoicePDF() {
+  const invoiceSection = document.getElementById('invoiceSection');
+  if (!invoiceSection) {
+    throw new Error('Invoice section not found');
+  }
 
-      const clone = invoiceSection.cloneNode(true);
-      const buttons = clone.querySelector('.invoice-buttons');
-      if (buttons) buttons.remove();
+  // 1. إنشاء حاوية مخفية في الشاشة لتجميع الفاتورة
+  const container = document.createElement('div');
+  container.style.position = 'fixed';
+  container.style.top = '0';
+  container.style.left = '0';
+  container.style.width = '600px';
+  container.style.height = '0';
+  container.style.overflow = 'hidden';
+  container.style.zIndex = '-9999';
 
-      clone.style.display = 'block';
-      clone.style.position = 'fixed';
-      clone.style.top = '0';
-      clone.style.left = '0';
-      clone.style.zIndex = '-9999';
-      clone.style.width = '100%';
-      clone.style.maxWidth = '600px';
-      clone.style.backgroundColor = '#ffffff';
-      clone.style.padding = '20px';
-clone.style.opacity = '0.01';
-      document.body.appendChild(clone);
+  // 2. عمل نسخة من الفاتورة ووضعها داخل الحاوية
+  const clone = invoiceSection.cloneNode(true);
+  const buttons = clone.querySelector('.invoice-buttons');
+  if (buttons) buttons.remove();
 
-      await new Promise(resolve => requestAnimationFrame(() => setTimeout(resolve, 700)));
+  clone.style.display = 'block';
+  clone.style.width = '600px';
+  clone.style.backgroundColor = '#ffffff';
+  clone.style.padding = '20px';
+  clone.style.boxSizing = 'border-box';
 
-      try {
-        return await html2pdf().set(getInvoicePDFOptions()).from(clone).outputPdf('blob');
-      } finally {
-        clone.remove();
-      }
-    }
+  container.appendChild(clone);
+  document.body.appendChild(container);
+
+  // 3. انتظار إتمام رسم العناصر
+  await new Promise(resolve => setTimeout(resolve, 800));
+
+  try {
+    const opt = getInvoicePDFOptions();
+    return await html2pdf().set(opt).from(clone).outputPdf('blob');
+  } finally {
+    container.remove();
+  }
+}
 
     async function downloadInvoicePDF() {
       try {
