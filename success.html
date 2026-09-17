@@ -142,14 +142,11 @@
       outline-offset: 3px;
     }
 
-    /* 🎀 تصميم الفاتورة وتثبيت تنسيق PDF 🎀 */
     .invoice-section {
       display: block;
       margin-top: 25px;
-      padding: 20px 15px;
-      border: 1px solid #ead8ce;
-      border-radius: 16px;
-      background: #ffffff;
+      padding-top: 22px;
+      border-top: 1px solid #ead8ce;
       text-align: left;
     }
 
@@ -157,24 +154,10 @@
       text-align: right;
     }
 
-    .receipt-ribbon {
-      background: linear-gradient(135deg, #f7d6e0, #fce4ec);
-      color: #d94f8b;
-      text-align: center;
-      font-weight: bold;
-      padding: 8px 12px;
-      border-radius: 10px;
-      font-size: 15px;
-      margin-bottom: 15px;
-      letter-spacing: 0.5px;
-    }
-
     .invoice-section h2 {
       color: #d94f8b;
       margin-top: 0;
-      margin-bottom: 12px;
       text-align: center;
-      font-size: 20px;
     }
 
     .invoice-info {
@@ -186,7 +169,6 @@
 
     .invoice-info p {
       margin: 6px 0;
-      line-height: 1.5;
     }
 
     .invoice-table {
@@ -194,35 +176,13 @@
       border-collapse: collapse;
       background: white;
       font-size: 13px;
-      table-layout: fixed;
     }
 
     .invoice-table th,
     .invoice-table td {
       border: 1px solid #ead8ce;
-      padding: 10px 4px;
+      padding: 8px 5px;
       text-align: center;
-      word-wrap: break-word;
-      line-height: 1.4;
-      vertical-align: middle;
-    }
-
-    /* حل مشكلة عكس المبالغ والكلمات المركبة */
-    .bdi-text {
-      display: inline-block;
-      unicode-bidi: isolate;
-    }
-
-    .price-num {
-      direction: ltr !important;
-      unicode-bidi: embed;
-      display: inline-block;
-      white-space: nowrap;
-    }
-
-    .invoice-table td.product-cell {
-      text-align: inherit;
-      padding: 10px 8px;
     }
 
     .invoice-table th {
@@ -235,18 +195,10 @@
       font-size: 15px;
     }
 
-    .receipt-footer {
-      text-align: center;
-      margin-top: 18px;
-      padding-top: 12px;
-      border-top: 1px dashed #ead8ce;
-      font-size: 13px;
-      color: #7a5a48;
-    }
-
-    .receipt-footer p {
-      margin: 3px 0;
-      font-weight: 500;
+    /* حماية ترتيب الأرقام والعملة والكلمات المركبة داخل PDF */
+    .bdi-safe {
+      display: inline-block;
+      unicode-bidi: isolate;
     }
 
     .invoice-buttons {
@@ -351,10 +303,6 @@
     </a>
 
     <div id="invoiceSection" class="invoice-section">
-      <div class="receipt-ribbon">
-        🎀 SHO SHO MATCHA 🎀
-      </div>
-
       <h2 id="invoiceTitle">Your Invoice</h2>
 
       <div class="invoice-info">
@@ -377,10 +325,10 @@
       <table class="invoice-table">
         <thead>
           <tr>
-            <th id="thProduct" style="width: 42%;">Product</th>
-            <th id="thQty" style="width: 14%;">Qty</th>
-            <th id="thPrice" style="width: 22%;">Price</th>
-            <th id="thTotal" style="width: 22%;">Total</th>
+            <th id="thProduct">Product</th>
+            <th id="thQty">Qty</th>
+            <th id="thPrice">Price</th>
+            <th id="thTotal">Total</th>
           </tr>
         </thead>
 
@@ -389,17 +337,12 @@
         <tfoot>
           <tr>
             <td colspan="3">
-              <strong id="labelGrandTotal"><bdi class="bdi-text">Grand Total</bdi></strong>
+              <strong id="labelGrandTotal"><bdi class="bdi-safe">Grand Total</bdi></strong>
             </td>
-            <td><span id="invoiceTotal" class="price-num">0.00 BD</span></td>
+            <td id="invoiceTotal"><bdi class="bdi-safe">0.00 BD</bdi></td>
           </tr>
         </tfoot>
       </table>
-
-      <div class="receipt-footer">
-        <p id="footerLoveText"><bdi class="bdi-text">Made with ❤️ for you</bdi></p>
-        <p id="footerThanksText"><bdi class="bdi-text">✨ Thank you for your order! ✨</bdi></p>
-      </div>
 
       <div class="invoice-buttons">
         <button
@@ -458,7 +401,7 @@
 
       items.forEach(function (item) {
         const name = item.name || item.productName || item.title || item.product || '-';
-        const person = item.personName ? `<br><small style="color: #7a5a48;">(${item.personName})</small>` : '';
+        const person = item.personName ? ` (${item.personName})` : '';
         const qty = Number(item.quantity ?? item.qty ?? 1);
         const price = Number(item.price ?? item.unitPrice ?? 0);
         const itemTotal = item.total !== undefined ? Number(item.total) : (price * qty);
@@ -468,8 +411,7 @@
         const row = document.createElement('tr');
 
         const productCell = document.createElement('td');
-        productCell.className = 'product-cell';
-        productCell.innerHTML = `<div><bdi class="bdi-text">${name}</bdi></div>${person}`;
+        productCell.innerHTML = `<bdi class="bdi-safe">${name}${person}</bdi>`;
         row.appendChild(productCell);
 
         const quantityCell = document.createElement('td');
@@ -477,17 +419,17 @@
         row.appendChild(quantityCell);
 
         const priceCell = document.createElement('td');
-        priceCell.innerHTML = `<span class="price-num">${price.toFixed(2)} BD</span>`;
+        priceCell.innerHTML = `<bdi class="bdi-safe">${price.toFixed(2)} BD</bdi>`;
         row.appendChild(priceCell);
 
         const totalCell = document.createElement('td');
-        totalCell.innerHTML = `<span class="price-num">${itemTotal.toFixed(2)} BD</span>`;
+        totalCell.innerHTML = `<bdi class="bdi-safe">${itemTotal.toFixed(2)} BD</bdi>`;
         row.appendChild(totalCell);
 
         tbody.appendChild(row);
       });
 
-      document.getElementById('invoiceTotal').textContent = `${grandTotal.toFixed(2)} BD`;
+      document.getElementById('invoiceTotal').innerHTML = `<bdi class="bdi-safe">${grandTotal.toFixed(2)} BD</bdi>`;
       return grandTotal;
     }
 
@@ -619,14 +561,14 @@
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-      // فحص صارم لمنع التحول للغة العربية افتراضياً
-      const rawLang = localStorage.getItem("siteLanguage") || localStorage.getItem("lang");
-      const isExplicitArabic = (rawLang && String(rawLang).trim().toLowerCase() === "ar");
+      // نفس الكود الخاص بك بالضبط لنظام حفظ وقراءة اللغة
+      const savedLang = localStorage.getItem("siteLanguage") || "en";
+      const isArabic = savedLang === "ar";
 
-      if (isExplicitArabic) {
-        document.documentElement.lang = "ar";
-        document.documentElement.dir = "rtl";
+      document.documentElement.lang = savedLang;
+      document.documentElement.dir = isArabic ? "rtl" : "ltr";
 
+      if (isArabic) {
         document.getElementById("thankYouTitle").textContent = "شكراً لك!";
         document.getElementById("successMessage").textContent = "تم إرسال طلبك بنجاح.";
         document.getElementById("paymentMessage").textContent = "يرجى إكمال عملية الدفع باستخدام BenefitPay – فوري+، ثم إرسال إشعار التحويل لنا عبر الإنستغرام.";
@@ -651,15 +593,9 @@
         document.getElementById("thQty").textContent = "الكمية";
         document.getElementById("thPrice").textContent = "السعر";
         document.getElementById("thTotal").textContent = "المجموع";
-        document.getElementById("labelGrandTotal").innerHTML = '<bdi class="bdi-text">المجموع الكلي</bdi>';
+        document.getElementById("labelGrandTotal").innerHTML = '<bdi class="bdi-safe">المجموع الكلي</bdi>';
         document.getElementById("downloadPdfBtn").textContent = "تحميل الفاتورة PDF";
         document.getElementById("sharePdfBtn").textContent = "مشاركة الفاتورة PDF";
-        document.getElementById("footerLoveText").innerHTML = '<bdi class="bdi-text">صُنع بـ ❤️ لأجلك</bdi>';
-        document.getElementById("footerThanksText").innerHTML = '<bdi class="bdi-text">✨ شكراً لطلبك من شوشو ماتشا! ✨</bdi>';
-      } else {
-        // فرض الإنجليزية بدون تهاون
-        document.documentElement.lang = "en";
-        document.documentElement.dir = "ltr";
       }
 
       loadInvoice();
