@@ -142,7 +142,7 @@
       outline-offset: 3px;
     }
 
-    /* 🎀 تصميم الفاتورة 🎀 */
+    /* 🎀 تصميم الفاتورة وإصلاح نصوص الـ PDF 🎀 */
     .invoice-section {
       display: block;
       margin-top: 25px;
@@ -207,7 +207,13 @@
       vertical-align: middle;
     }
 
-    /* إصلاح اتجاه عرض المبالغ لمنع التداخل واللخبطة في PDF */
+    /* حماية النصوص والعناوين من الانعكاس واللخبطة في PDF */
+    .pdf-safe-text {
+      display: inline-block;
+      white-space: nowrap;
+      direction: inherit;
+    }
+
     .price-num {
       direction: ltr !important;
       unicode-bidi: embed;
@@ -384,7 +390,7 @@
         <tfoot>
           <tr>
             <td colspan="3">
-              <strong id="labelGrandTotal">Grand Total</strong>
+              <strong id="labelGrandTotal" class="pdf-safe-text">Grand Total</strong>
             </td>
             <td><span id="invoiceTotal" class="price-num">0.00 BD</span></td>
           </tr>
@@ -392,8 +398,8 @@
       </table>
 
       <div class="receipt-footer">
-        <p id="footerLoveText">Made with ❤️ for you</p>
-        <p id="footerThanksText">✨ Thank you for your order! ✨</p>
+        <p id="footerLoveText" class="pdf-safe-text">Made with ❤️ for you</p>
+        <p id="footerThanksText" class="pdf-safe-text">✨ Thank you for your order! ✨</p>
       </div>
 
       <div class="invoice-buttons">
@@ -614,9 +620,9 @@
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-      // ضبط اللغة الافتراضية إلى الإنجليزية بشكل قاطع إلا إذا عيّن المستخدم "ar" صراحة
-      const savedLang = localStorage.getItem("siteLanguage");
-      const isArabic = (savedLang === "ar");
+      // فحص حاسم للغة: افتراضياً English، ولا يتحول للعربي إلا عند التأكد التام
+      const savedLang = localStorage.getItem("siteLanguage") || localStorage.getItem("lang");
+      const isArabic = (savedLang === "ar" || savedLang === "arabic");
 
       if (isArabic) {
         document.documentElement.lang = "ar";
