@@ -1094,10 +1094,8 @@ document.querySelectorAll(".card .btn").forEach(function(button) {
           "INV-" +
           Date.now().toString().slice(-6),
 
-        date: new Date().toLocaleDateString(
-          savedLanguage === "ar"
-            ? "ar-BH"
-            : "en-GB"
+        date: new Date().toLocaleDateString("en-GB"),
+
         ),
 
         customerName: customerName || "-",
