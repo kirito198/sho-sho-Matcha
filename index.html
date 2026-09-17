@@ -149,7 +149,6 @@
       text-decoration: underline;
     }
 
-    /* Cart notification */
     .cart-notification {
       position: fixed;
       top: 20px;
@@ -175,7 +174,6 @@
       transform: translateY(0);
     }
 
-    /* Order popup */
     .order-modal {
       display: none;
       position: fixed;
@@ -243,7 +241,6 @@
       resize: vertical;
     }
 
-    /* Cart items */
     .cart-item {
       display: grid;
       grid-template-columns: 1fr;
@@ -284,7 +281,6 @@
       padding: 10px;
     }
 
-    /* Total */
     .cart-total {
       margin: 15px 0;
       padding: 15px;
@@ -297,7 +293,6 @@
       font-weight: bold;
     }
 
-    /* Payment instructions */
     .payment-instructions {
       margin: 18px 0;
       border: 1px solid #ead8ce;
@@ -387,25 +382,24 @@
         text-align: center;
       }
     }
-.oat-milk-note {
-  font-size: 11px;
-  font-weight: normal;
-  color: #777;
-  margin-left: 5px;
-}
 
-.language-btn {
-  margin-top: 15px;
-  padding: 8px 16px;
-  border: 1px solid #d94f8b;
-  border-radius: 999px;
-  background: white;
-  color: #d94f8b;
-  font-weight: bold;
-  cursor: pointer;
-}
+    .oat-milk-note {
+      font-size: 11px;
+      font-weight: normal;
+      color: #777;
+      margin-left: 5px;
+    }
 
-
+    .language-btn {
+      margin-top: 15px;
+      padding: 8px 16px;
+      border: 1px solid #d94f8b;
+      border-radius: 999px;
+      background: white;
+      color: #d94f8b;
+      font-weight: bold;
+      cursor: pointer;
+    }
   </style>
 </head>
 
@@ -427,13 +421,12 @@
 
     <h1>SHO SHO</h1>
     <p class="subtitle" id="subtitle">
-  Delicious Homemade Matcha
-</p>
+      Delicious Homemade Matcha
+    </p>
 
-<button id="languageToggle" class="language-btn" type="button">
-  العربية
-</button>
-
+    <button id="languageToggle" class="language-btn" type="button">
+      العربية
+    </button>
   </header>
 
   <main>
@@ -447,18 +440,16 @@
           class="product-image"
         >
 
-        <h2>SHOSHO'S SECRET</h2>
+        <h2 class="product-name" data-en="SHOSHO'S SECRET" data-ar="خلطة شوشو السرية">SHOSHO'S SECRET</h2>
 
-<p>
-  Signature Matcha
-  <small class="oat-milk-note">
-  *contains oat milk*
-</small>
+        <p>
+          <span class="product-desc" data-en="Signature Matcha" data-ar="ماتشا مميزة">Signature Matcha</span>
+          <small class="oat-milk-note">
+            *contains oat milk*
+          </small>
+        </p>
 
-</p>
-
-<div class="price">2.5 BD</div>
-
+        <div class="price">2.5 BD</div>
 
         <button
           class="btn"
@@ -477,8 +468,8 @@
           class="product-image"
         >
 
-        <h2>OG MATCHA</h2>
-        <p>Classic Matcha Taste</p>
+        <h2 class="product-name" data-en="OG MATCHA" data-ar="ماتشا كلاسيك">OG MATCHA</h2>
+        <p class="product-desc" data-en="Classic Matcha Taste" data-ar="طعم الماتشا الأصلي">Classic Matcha Taste</p>
         <div class="price">1.8 BD</div>
 
         <button
@@ -498,8 +489,8 @@
           class="product-image"
         >
 
-        <h2>SHOSHO'S BREW</h2>
-        <p>Signature Coffee</p>
+        <h2 class="product-name" data-en="SHOSHO'S BREW" data-ar="قهوة شوشو الخاصة">SHOSHO'S BREW</h2>
+        <p class="product-desc" data-en="Signature Coffee" data-ar="قهوة مميزة">Signature Coffee</p>
         <div class="price">1.8 BD</div>
 
         <button
@@ -519,8 +510,8 @@
           class="product-image"
         >
 
-        <h2>ICED AMERICANO</h2>
-        <p>Refreshing Iced Coffee</p>
+        <h2 class="product-name" data-en="ICED AMERICANO" data-ar="آيس أمريكانو">ICED AMERICANO</h2>
+        <p class="product-desc" data-en="Refreshing Iced Coffee" data-ar="قهوة باردة منعشة">Refreshing Iced Coffee</p>
         <div class="price">1 BD</div>
 
         <button
@@ -541,8 +532,7 @@
         onclick="openCart()"
       >
         <span id="viewCartText">View Cart</span>
-(<span id="cartCount">0</span>)
-
+        (<span id="cartCount">0</span>)
       </button>
     </div>
   </main>
@@ -624,13 +614,12 @@
         <!-- Payment Instructions -->
         <details class="payment-instructions">
           <summary
-  id="paymentTitle"
-  data-en="Payment Instructions (BenefitPay – Fawri+)"
-  data-ar="تعليمات الدفع (BenefitPay – فوري+)"
->
-  Payment Instructions (BenefitPay – Fawri+)
-</summary>
-
+            id="paymentTitle"
+            data-en="Payment Instructions (BenefitPay – Fawri+)"
+            data-ar="تعليمات الدفع (BenefitPay – فوري+)"
+          >
+            Payment Instructions (BenefitPay – Fawri+)
+          </summary>
 
           <div class="instructions-content">
 
@@ -641,26 +630,24 @@
             >
 
             <ol id="paymentSteps">
-  <li>Capture the QR code.</li>
-  <li>Open your BenefitPay app.</li>
-  <li>Choose Fawri+ and click on “Scan QR”.</li>
-  <li>
-    After opening the camera, click on the top right to upload a photo.
-  </li>
-  <li>
-    Select the QR code you captured from our website and complete the payment.
-  </li>
-  <li>
-    Kindly share the transaction with us on Instagram to confirm your order.
-  </li>
-</ol>
-
+              <li>Capture the QR code.</li>
+              <li>Open your BenefitPay app.</li>
+              <li>Choose Fawri+ and click on “Scan QR”.</li>
+              <li>
+                After opening the camera, click on the top right to upload a photo.
+              </li>
+              <li>
+                Select the QR code you captured from our website and complete the payment.
+              </li>
+              <li>
+                Kindly share the transaction with us on Instagram to confirm your order.
+              </li>
+            </ol>
 
             <p class="note" id="paymentNote">
-  <strong>Note:</strong>
-  We will share the pickup location with you after receiving the payment transaction.
-</p>
-
+              <strong>Note:</strong>
+              We will share the pickup location with you after receiving the payment transaction.
+            </p>
 
           </div>
         </details>
@@ -678,7 +665,6 @@
 
   <footer class="footer">
     Order through Instagram DM:
-
     <a
       href="https://ig.me/m/shoshomatcha"
       target="_blank"
@@ -690,9 +676,8 @@
 
   <script>
     let cart = [];
-let notificationTimeout;
-let isArabic = false;
-
+    let notificationTimeout;
+    let isArabic = false;
 
     function addToCart(productName, price) {
       cart.push({
@@ -704,33 +689,25 @@ let isArabic = false;
       updateCart();
 
       showCartNotification(
-        `✓ ${productName} added to your cart`
+        isArabic ? `✓ تم إضافة ${productName} إلى السلة` : `✓ ${productName} added to your cart`
       );
     }
 
     function showCartNotification(message) {
-      const notification =
-        document.getElementById("cartNotification");
-
+      const notification = document.getElementById("cartNotification");
       notification.textContent = message;
       notification.classList.add("show");
 
       clearTimeout(notificationTimeout);
-
       notificationTimeout = setTimeout(function() {
         notification.classList.remove("show");
       }, 2500);
     }
 
     function updateCart() {
-      const cartCount =
-        document.getElementById("cartCount");
-
-      const cartItems =
-        document.getElementById("cartItems");
-
-      const cartTotal =
-        document.getElementById("cartTotal");
+      const cartCount = document.getElementById("cartCount");
+      const cartItems = document.getElementById("cartItems");
+      const cartTotal = document.getElementById("cartTotal");
 
       cartCount.textContent = cart.length;
       cartItems.innerHTML = "";
@@ -738,42 +715,34 @@ let isArabic = false;
       let total = 0;
 
       if (cart.length === 0) {
-  cartItems.innerHTML = `
-    <p class="empty-cart">
-      ${isArabic ? "السلة فارغة." : "Your cart is empty."}
-    </p>
-  `;
-
-  cartTotal.textContent =
-    `${isArabic ? "المجموع" : "Total"}: 0 BD`;
-
-  updateOrderDetails();
-  return;
-}
-
+        cartItems.innerHTML = `
+          <p class="empty-cart">
+            ${isArabic ? "السلة فارغة." : "Your cart is empty."}
+          </p>
+        `;
+        cartTotal.textContent = `${isArabic ? "المجموع" : "Total"}: 0 BD`;
+        updateOrderDetails();
+        return;
+      }
 
       cart.forEach(function(item, index) {
         const itemPrice = parseFloat(item.price);
         total += itemPrice;
 
-        const itemElement =
-          document.createElement("div");
-
+        const itemElement = document.createElement("div");
         itemElement.className = "cart-item";
 
         itemElement.innerHTML = `
-         <strong>
-  ${index + 1}. ${item.product} - ${item.price}
-
-  ${
-   item.product === "SHOSHO'S SECRET"
-  ? `<small class="oat-milk-note">
-       ${isArabic ? "*يحتوي على حليب الشوفان*" : "*contains oat milk*"}
-     </small>`
-  : ""
-
-  }
-</strong>
+          <strong>
+            ${index + 1}. ${item.product} - ${item.price}
+            ${
+              item.product === "SHOSHO'S SECRET"
+              ? `<small class="oat-milk-note">
+                   ${isArabic ? "*يحتوي على حليب الشوفان*" : "*contains oat milk*"}
+                 </small>`
+              : ""
+            }
+          </strong>
 
           <input
             type="text"
@@ -790,16 +759,12 @@ let isArabic = false;
           </button>
         `;
 
-        const nameInput =
-          itemElement.querySelector("input");
-
+        const nameInput = itemElement.querySelector("input");
         nameInput.addEventListener("input", function() {
           updatePersonName(index, this.value);
         });
 
-        const removeButton =
-          itemElement.querySelector(".remove-item");
-
+        const removeButton = itemElement.querySelector(".remove-item");
         removeButton.addEventListener("click", function() {
           removeFromCart(index);
         });
@@ -807,10 +772,7 @@ let isArabic = false;
         cartItems.appendChild(itemElement);
       });
 
-      cartTotal.textContent =
-  `${isArabic ? "المجموع" : "Total"}: ${total.toFixed(1)} BD`;
-
-
+      cartTotal.textContent = `${isArabic ? "المجموع" : "Total"}: ${total.toFixed(1)} BD`;
       updateOrderDetails();
     }
 
@@ -821,19 +783,16 @@ let isArabic = false;
 
     function removeFromCart(index) {
       const removedProduct = cart[index].product;
-
       cart.splice(index, 1);
       updateCart();
 
       showCartNotification(
-        `✓ ${removedProduct} removed from your cart`
+        isArabic ? `✓ تم إزالة ${removedProduct} من السلة` : `✓ ${removedProduct} removed from your cart`
       );
     }
 
     function updateOrderDetails() {
-      const orderDetails =
-        document.getElementById("orderDetails");
-
+      const orderDetails = document.getElementById("orderDetails");
       const total = cart.reduce(function(sum, item) {
         return sum + parseFloat(item.price);
       }, 0);
@@ -852,311 +811,164 @@ let isArabic = false;
     }
 
     function openCart() {
-      document
-        .getElementById("orderModal")
-        .classList.add("show");
-
+      document.getElementById("orderModal").classList.add("show");
       document.body.style.overflow = "hidden";
-
       updateCart();
     }
 
     function closeOrderForm() {
-      document
-        .getElementById("orderModal")
-        .classList.remove("show");
-
+      document.getElementById("orderModal").classList.remove("show");
       document.body.style.overflow = "auto";
     }
-
-    document
-  .getElementById("orderForm")
-  .addEventListener("submit", function (event) {
-    if (cart.length === 0) {
-      event.preventDefault();
-      alert("Please add at least one product to your cart.");
-      return;
-    }
-
-    const missingName = cart.some(function (item) {
-      return !item.personName || item.personName.trim() === "";
-    });
-
-    if (missingName) {
-      event.preventDefault();
-      alert("Please write the person's name for every product.");
-      return;
-    }
-
-    const invoiceItems = cart.map(function (item) {
-      const price = Number(
-        String(item.price).replace(/[^0-9.]/g, "")
-      );
-
-      const quantity = Number(item.quantity || 1);
-
-      return {
-        name: item.product,
-        personName: item.personName,
-        quantity: quantity,
-        price: price,
-        total: price * quantity
-      };
-    });
-
-    const grandTotal = invoiceItems.reduce(function (
-      total,
-      item
-    ) {
-      return total + item.total;
-    }, 0);
-
-    const invoice = {
-      invoiceNumber:
-        "SHO-" + Date.now().toString().slice(-8),
-
-      date: new Date().toISOString(),
-
-      customerName:
-        document.getElementById("name").value.trim(),
-
-      customerInstagram:
-        document.getElementById("instagram").value.trim(),
-
-      items: invoiceItems,
-
-      grandTotal: grandTotal
-    };
-
-    localStorage.setItem(
-      "shoshoInvoice",
-      JSON.stringify(invoice)
-    );
-
-    updateOrderDetails();
-  });
-
 
     document.addEventListener("keydown", function(event) {
       if (event.key === "Escape") {
         closeOrderForm();
       }
     });
-document
-  .getElementById("languageToggle")
-  .addEventListener("click", function() {
-    isArabic = !isArabic;
 
-    localStorage.setItem(
-      "siteLanguage",
-      isArabic ? "ar" : "en"
-    );
+    // اللغة
+    document.getElementById("languageToggle").addEventListener("click", function() {
+      isArabic = !isArabic;
 
-    document.documentElement.lang =
-      isArabic ? "ar" : "en";
+      localStorage.setItem("siteLanguage", isArabic ? "ar" : "en");
+      document.documentElement.lang = isArabic ? "ar" : "en";
+      document.documentElement.dir = isArabic ? "rtl" : "ltr";
 
-    document.documentElement.dir =
-      isArabic ? "rtl" : "ltr";
+      document.getElementById("subtitle").textContent =
+        isArabic ? "ماتشا ومشروبات منزلية لديدة" : "Delicious Homemade Matcha";
 
-    document.getElementById("subtitle").textContent =
-      isArabic
-        ? "Delicious Homemade Matcha"
-        : "Delicious Homemade Matcha";
+      document.getElementById("viewCartText").textContent =
+        isArabic ? "عرض السلة" : "View Cart";
 
-    document.getElementById("viewCartText").textContent =
-      isArabic
-        ? "عرض السلة"
-        : "View Cart";
+      document.querySelector(".language-btn").textContent =
+        isArabic ? "English" : "العربية";
 
-    document.querySelector(".language-btn").textContent =
-      isArabic
-        ? "English"
-        : "العربية";
+      document.querySelector(".order-box h2").textContent =
+        isArabic ? "إتمام الطلب" : "Place Your Order";
 
-    document.querySelector(".order-box h2").textContent =
-      isArabic
-        ? "إتمام الطلب"
-        : "Place Your Order";
+      document.querySelector('label[for="name"]').textContent =
+        isArabic ? "الاسم" : "Your Name";
 
-    document.querySelector('label[for="name"]').textContent =
-      isArabic
-        ? "الاسم"
-        : "Your Name";
+      document.getElementById("name").placeholder =
+        isArabic ? "الاسم" : "Your name";
 
-    document.getElementById("name").placeholder =
-      isArabic
-        ? " الأسم"
-        : "Your name";
+      document.querySelector('label[for="instagram"]').textContent =
+        isArabic ? "الإنستغرام" : "Instagram";
 
-    document.querySelector('label[for="instagram"]').textContent =
-      isArabic
-        ? "الإنستغرام"
-        : "Instagram";
+      document.querySelector('label[for="pickup-time"]').textContent =
+        isArabic ? "وقت الاستلام" : "Pickup Time";
 
-    document.querySelector('label[for="pickup-time"]').textContent =
-      isArabic
-        ? "وقت الاستلام"
-        : "Pickup Time";
+      document.querySelector('label[for="notes"]').textContent =
+        isArabic ? "ملاحظات" : "Notes";
 
-    document.querySelector('label[for="notes"]').textContent =
-      isArabic
-        ? "ملاحظات"
-        : "Notes";
+      document.getElementById("notes").placeholder =
+        isArabic ? "أي طلبات خاصة؟" : "Any special requests?";
 
-    document.getElementById("notes").placeholder =
-      isArabic
-        ? "أي طلبات خاصة؟"
-        : "Any special requests؟";
+      document.getElementById("paymentTitle").textContent =
+        isArabic ? "تعليمات الدفع (BenefitPay – فوري+)" : "Payment Instructions (BenefitPay – Fawri+)";
 
-    document.querySelector(
-      ".payment-instructions summary"
-    ).textContent =
-      isArabic
-        ? "تعليمات الدفع (BenefitPay – Fawri+)"
-        : "Payment Instructions (BenefitPay – Fawri+)";
+      document.querySelector(".submit-btn").textContent =
+        isArabic ? "إرسال الطلب" : "Submit Order";
 
-    document.querySelector(".submit-btn").textContent =
-      isArabic
-        ? "إرسال الطلب"
-        : "Submit Order";
-document.querySelectorAll(".product-name").forEach(function(product) {
-  product.textContent = isArabic
-    ? product.dataset.ar
-    : product.dataset.en;
-});
+      document.querySelectorAll(".product-name").forEach(function(product) {
+        product.textContent = isArabic ? product.dataset.ar : product.dataset.en;
+      });
 
-document.querySelectorAll(".oat-milk-note").forEach(function(note) {
-  note.textContent = isArabic
-    ? "*يحتوي على حليب الشوفان*"
-    : "*contains oat milk*";
-});
+      document.querySelectorAll(".product-desc").forEach(function(desc) {
+        desc.textContent = isArabic ? desc.dataset.ar : desc.dataset.en;
+      });
 
-document.getElementById("paymentTitle").textContent =
-  isArabic
-    ? "تعليمات الدفع (BenefitPay – فوري+)"
-    : "Payment Instructions (BenefitPay – Fawri+)";
+      document.querySelectorAll(".oat-milk-note").forEach(function(note) {
+        note.textContent = isArabic ? "*يحتوي على حليب الشوفان*" : "*contains oat milk*";
+      });
 
-document.getElementById("paymentSteps").innerHTML =
-  isArabic
-    ? `
-      <li>صوّر رمز QR.</li>
-      <li>افتح تطبيق BenefitPay.</li>
-      <li>اختار فوري+ واضغط على مسح QR.</li>
-      <li>بعد فتح الكاميرا، اضغط أعلى اليمين لرفع صورة.</li>
-      <li>اختار صورة رمز QR من موقعنا وأكمل عملية الدفع.</li>
-      <li>أرسل عملية التحويل لنا عبر الإنستغرام لتأكيد طلبك.</li>
-    `
-    : `
-      <li>Capture the QR code.</li>
-      <li>Open your BenefitPay app.</li>
-      <li>Choose Fawri+ and click on “Scan QR”.</li>
-      <li>After opening the camera, click on the top right to upload a photo.</li>
-      <li>Select the QR code you captured from our website and complete the payment.</li>
-      <li>Kindly share the transaction with us on Instagram to confirm your order.</li>
-    `;
+      document.getElementById("paymentSteps").innerHTML = isArabic
+        ? `
+          <li>صوّر رمز QR.</li>
+          <li>افتح تطبيق BenefitPay.</li>
+          <li>اختار فوري+ واضغط على مسح QR.</li>
+          <li>بعد فتح الكاميرا، اضغط أعلى اليمين لرفع صورة.</li>
+          <li>اختار صورة رمز QR من موقعنا وأكمل عملية الدفع.</li>
+          <li>أرسل عملية التحويل لنا عبر الإنستغرام لتأكيد طلبك.</li>
+        `
+        : `
+          <li>Capture the QR code.</li>
+          <li>Open your BenefitPay app.</li>
+          <li>Choose Fawri+ and click on “Scan QR”.</li>
+          <li>After opening the camera, click on the top right to upload a photo.</li>
+          <li>Select the QR code you captured from our website and complete the payment.</li>
+          <li>Kindly share the transaction with us on Instagram to confirm your order.</li>
+        `;
 
-document.getElementById("paymentNote").innerHTML =
-  isArabic
-    ? `
-      <strong>ملاحظة:</strong>
-      سنرسل لك موقع الاستلام بعد استلام عملية التحويل.
-    `
-    : `
-      <strong>Note:</strong>
-      We will share the pickup location with you after receiving the payment transaction.
-    `;
+      document.getElementById("paymentNote").innerHTML = isArabic
+        ? `<strong>ملاحظة:</strong> سنرسل لك موقع الاستلام بعد استلام عملية التحويل.`
+        : `<strong>Note:</strong> We will share the pickup location with you after receiving the payment transaction.`;
 
-document.querySelectorAll(".card .btn").forEach(function(button) {
-  button.textContent = isArabic
-    ? "أضف إلى السلة"
-    : "Add to Cart";
-});
+      document.querySelectorAll(".card .btn").forEach(function(button) {
+        button.textContent = isArabic ? "أضف إلى السلة" : "Add to Cart";
+      });
 
-    updateCart();
-  });
+      updateCart();
+    });
 
-  </script>
-<script>
-  const orderForm =
-    document.getElementById("orderForm");
+    // معالجة تقديم الطلب وحفظ الفاتورة
+    document.getElementById("orderForm").addEventListener("submit", function (event) {
+      if (cart.length === 0) {
+        event.preventDefault();
+        alert(isArabic ? "يرجى إضافة منتج واحد على الأقل للسلة." : "Please add at least one product to your cart.");
+        return;
+      }
 
-  if (orderForm) {
-    orderForm.addEventListener("submit", function (event) {
-      // لا تحفظ الفاتورة إذا كانت السلة فارغة
-      if (!cart || cart.length === 0) {
+      const missingName = cart.some(function (item) {
+        return !item.personName || item.personName.trim() === "";
+      });
+
+      if (missingName) {
+        event.preventDefault();
+        alert(isArabic ? "يرجى كتابة اسم الشخص لكل منتج في السلة." : "Please write the person's name for every product.");
         return;
       }
 
       const orderItems = cart.map(function (item) {
-        const price =
-          parseFloat(item.price) || 0;
-
+        const price = parseFloat(String(item.price).replace(/[^0-9.]/g, "")) || 0;
         return {
           name: item.product,
+          personName: item.personName,
           quantity: 1,
           price: price,
           total: price
         };
       });
 
-      const total = orderItems.reduce(function (
-        sum,
-        item
-      ) {
+      const total = orderItems.reduce(function (sum, item) {
         return sum + item.total;
       }, 0);
 
-      const customerName =
-        document.getElementById("name").value.trim();
-
-      const instagram =
-        document.getElementById("instagram").value.trim();
-
-      const pickupTime =
-        document.getElementById("pickup-time").value;
-
-      const notes =
-        document.getElementById("notes").value.trim();
-
-      const savedLanguage =
-        localStorage.getItem("siteLanguage") || "en";
+      const customerName = document.getElementById("name").value.trim();
+      const instagram = document.getElementById("instagram").value.trim();
+      const pickupTime = document.getElementById("pickup-time").value;
+      const notes = document.getElementById("notes").value.trim();
 
       const order = {
-        invoiceNumber:
-          "INV-" +
-          Date.now().toString().slice(-6),
-
+        invoiceNumber: "INV-" + Date.now().toString().slice(-6),
         date: new Date().toLocaleDateString("en-GB"),
-
-
         customerName: customerName || "-",
         instagram: instagram || "-",
         pickupTime: pickupTime || "-",
         notes: notes || "-",
         paymentMethod: "BenefitPay",
-
         items: orderItems,
-
         subtotal: total,
         discount: 0,
         tax: 0,
         grandTotal: total
       };
 
-      // حفظ بيانات الفاتورة قبل الانتقال إلى success.html
-      localStorage.setItem(
-        "shoshoInvoice",
-        JSON.stringify(order)
-      );
-
-      // للتأكد أثناء التجربة
-      console.log(
-        "Invoice saved:",
-        order
-      );
+      localStorage.setItem("shoshoInvoice", JSON.stringify(order));
+      updateOrderDetails();
     });
-  }
-</script>
+  </script>
 
 </body>
 </html>
