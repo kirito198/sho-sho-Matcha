@@ -558,5 +558,52 @@
       loadInvoice();
     });
   </script>
+  <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // 1. قراءة اللغة المحفوظة (الافتراضي إنجليزي إذا لم توجد)
+    const savedLang = localStorage.getItem("siteLanguage") || "en";
+    const isArabic = savedLang === "ar";
+
+    // 2. ضبط اتجاه الصفحة ولغتها
+    document.documentElement.lang = savedLang;
+    document.documentElement.dir = isArabic ? "rtl" : "ltr";
+
+    // 3. ترجمة النصوص الثابتة في صفحة التأكيد
+    const titleEl = document.querySelector("h1");
+    if (titleEl) {
+      titleEl.textContent = isArabic ? "تم استلام طلبك بنجاح!" : "Order Received!";
+    }
+
+    const subtitleEl = document.querySelector(".subtitle, p");
+    if (subtitleEl) {
+      subtitleEl.textContent = isArabic 
+        ? "شكراً لطلبك من SHO SHO. تجد أدناه تفاصيل الفاتورة:" 
+        : "Thank you for ordering from SHO SHO. Here is your invoice:";
+    }
+
+    const backBtn = document.querySelector(".btn, .back-btn");
+    if (backBtn) {
+      backBtn.textContent = isArabic ? "العودة للرئيسية" : "Back to Home";
+    }
+
+    // 4. قراءة الفاتورة وترجمة العناوين الداخلية
+    const invoiceData = JSON.parse(localStorage.getItem("shoshoInvoice"));
+    if (invoiceData) {
+      // إذا كان لديك عناوين محددة للبيانات داخل الفاتورة، يمكنك ترجمتها هنا:
+      // مثال:
+      const invNumLabel = document.getElementById("invNumLabel");
+      if (invNumLabel) invNumLabel.textContent = isArabic ? "رقم الفاتورة:" : "Invoice #:";
+
+      const customerLabel = document.getElementById("customerLabel");
+      if (customerLabel) customerLabel.textContent = isArabic ? "الاسم:" : "Name:";
+
+      const timeLabel = document.getElementById("timeLabel");
+      if (timeLabel) timeLabel.textContent = isArabic ? "وقت الاستلام:" : "Pickup Time:";
+
+      const totalLabel = document.getElementById("totalLabel");
+      if (totalLabel) totalLabel.textContent = isArabic ? "المجموع الكلي:" : "Total:";
+    }
+  });
+</script>
 </body>
 </html>
