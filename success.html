@@ -142,7 +142,7 @@
       outline-offset: 3px;
     }
 
-    /* 🎀 تصميم قسم الفاتورة كإيصال أنيق 🎀 */
+    /* 🎀 تصميم الفاتورة كإيصال منظم لمنع تداخل النصوص 🎀 */
     .invoice-section {
       display: block;
       margin-top: 25px;
@@ -157,7 +157,6 @@
       text-align: right;
     }
 
-    /* الشريطة العلوية */
     .receipt-ribbon {
       background: linear-gradient(135deg, #f7d6e0, #fce4ec);
       color: #d94f8b;
@@ -187,6 +186,7 @@
 
     .invoice-info p {
       margin: 6px 0;
+      line-height: 1.5;
     }
 
     .invoice-table {
@@ -194,13 +194,23 @@
       border-collapse: collapse;
       background: white;
       font-size: 13px;
+      table-layout: fixed;
     }
 
     .invoice-table th,
     .invoice-table td {
       border: 1px solid #ead8ce;
-      padding: 8px 5px;
+      padding: 10px 6px;
       text-align: center;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      line-height: 1.4;
+      vertical-align: middle;
+    }
+
+    .invoice-table td.product-cell {
+      text-align: inherit;
+      padding: 10px 8px;
     }
 
     .invoice-table th {
@@ -213,7 +223,6 @@
       font-size: 15px;
     }
 
-    /* ❤️ تذييل الفاتورة ❤️ */
     .receipt-footer {
       text-align: center;
       margin-top: 18px;
@@ -330,7 +339,6 @@
     </a>
 
     <div id="invoiceSection" class="invoice-section">
-      <!-- 🎀 شريطة أعلى الفاتورة 🎀 -->
       <div class="receipt-ribbon">
         🎀 SHO SHO MATCHA 🎀
       </div>
@@ -357,10 +365,10 @@
       <table class="invoice-table">
         <thead>
           <tr>
-            <th id="thProduct">Product</th>
-            <th id="thQty">Qty</th>
-            <th id="thPrice">Price</th>
-            <th id="thTotal">Total</th>
+            <th id="thProduct" style="width: 45%;">Product</th>
+            <th id="thQty" style="width: 15%;">Qty</th>
+            <th id="thPrice" style="width: 20%;">Price</th>
+            <th id="thTotal" style="width: 20%;">Total</th>
           </tr>
         </thead>
 
@@ -376,7 +384,6 @@
         </tfoot>
       </table>
 
-      <!-- ❤️ تذييل الفاتورة السفلي ❤️ -->
       <div class="receipt-footer">
         <p id="footerLoveText">Made with ❤️ for you</p>
         <p id="footerThanksText">✨ Thank you for your order! ✨</p>
@@ -439,7 +446,7 @@
 
       items.forEach(function (item) {
         const name = item.name || item.productName || item.title || item.product || '-';
-        const person = item.personName ? ` (${item.personName})` : '';
+        const person = item.personName ? `<br><small style="color: #7a5a48;">(${item.personName})</small>` : '';
         const qty = Number(item.quantity ?? item.qty ?? 1);
         const price = Number(item.price ?? item.unitPrice ?? 0);
         const itemTotal = item.total !== undefined ? Number(item.total) : (price * qty);
@@ -449,7 +456,8 @@
         const row = document.createElement('tr');
 
         const productCell = document.createElement('td');
-        productCell.textContent = name + person;
+        productCell.className = 'product-cell';
+        productCell.innerHTML = `<div>${name}</div>${person}`;
         row.appendChild(productCell);
 
         const quantityCell = document.createElement('td');
@@ -599,13 +607,14 @@
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-      const savedLang = localStorage.getItem("siteLanguage") || "en";
+      // قراءة شرط اللغة بمرونة: لن تحول الإنجليزي إلى عربي إلا إذا اختار المستخدم ذلك صراحة
+      const savedLang = localStorage.getItem("siteLanguage");
       const isArabic = savedLang === "ar";
 
-      document.documentElement.lang = savedLang;
-      document.documentElement.dir = isArabic ? "rtl" : "ltr";
-
       if (isArabic) {
+        document.documentElement.lang = "ar";
+        document.documentElement.dir = "rtl";
+
         document.getElementById("thankYouTitle").textContent = "شكراً لك!";
         document.getElementById("successMessage").textContent = "تم إرسال طلبك بنجاح.";
         document.getElementById("paymentMessage").textContent = "يرجى إكمال عملية الدفع باستخدام BenefitPay – فوري+، ثم إرسال إشعار التحويل لنا عبر الإنستغرام.";
@@ -633,10 +642,11 @@
         document.getElementById("labelGrandTotal").textContent = "المجموع الكلي";
         document.getElementById("downloadPdfBtn").textContent = "تحميل الفاتورة PDF";
         document.getElementById("sharePdfBtn").textContent = "مشاركة الفاتورة PDF";
-        
-        // ترجمة التذييل للعربية
         document.getElementById("footerLoveText").textContent = "صُنع بـ ❤️ لأجلك";
         document.getElementById("footerThanksText").textContent = "✨ شكراً لطلبك من شوشو ماتشا! ✨";
+      } else {
+        document.documentElement.lang = "en";
+        document.documentElement.dir = "ltr";
       }
 
       loadInvoice();
