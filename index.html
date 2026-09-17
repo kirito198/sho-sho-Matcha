@@ -1045,12 +1045,19 @@ document.querySelectorAll(".card .btn").forEach(function(button) {
 
   </script>
 <script>
-  const orderForm = document.querySelector("form");
+  const orderForm =
+    document.getElementById("orderForm");
 
   if (orderForm) {
-    orderForm.addEventListener("submit", function () {
+    orderForm.addEventListener("submit", function (event) {
+      // لا تحفظ الفاتورة إذا كانت السلة فارغة
+      if (!cart || cart.length === 0) {
+        return;
+      }
+
       const orderItems = cart.map(function (item) {
-        const price = parseFloat(item.price) || 0;
+        const price =
+          parseFloat(item.price) || 0;
 
         return {
           name: item.product,
@@ -1060,35 +1067,63 @@ document.querySelectorAll(".card .btn").forEach(function(button) {
         };
       });
 
-      const total = orderItems.reduce(function (sum, item) {
+      const total = orderItems.reduce(function (
+        sum,
+        item
+      ) {
         return sum + item.total;
       }, 0);
 
       const customerName =
-        document.querySelector('[name="name"]')?.value ||
-        document.querySelector('[name="customer-name"]')?.value ||
-        "-";
+        document.getElementById("name").value.trim();
 
       const instagram =
-        document.querySelector('[name="instagram"]')?.value ||
-        "-";
+        document.getElementById("instagram").value.trim();
+
+      const pickupTime =
+        document.getElementById("pickup-time").value;
+
+      const notes =
+        document.getElementById("notes").value.trim();
+
+      const savedLanguage =
+        localStorage.getItem("siteLanguage") || "en";
 
       const order = {
-        invoiceNumber: "INV-" + Date.now().toString().slice(-6),
-        date: new Date().toLocaleDateString("en-GB"),
-        customerName: customerName,
-        instagram: instagram,
-        paymentMethod: "Order Payment",
+        invoiceNumber:
+          "INV-" +
+          Date.now().toString().slice(-6),
+
+        date: new Date().toLocaleDateString(
+          savedLanguage === "ar"
+            ? "ar-BH"
+            : "en-GB"
+        ),
+
+        customerName: customerName || "-",
+        instagram: instagram || "-",
+        pickupTime: pickupTime || "-",
+        notes: notes || "-",
+        paymentMethod: "BenefitPay",
+
         items: orderItems,
+
         subtotal: total,
         discount: 0,
         tax: 0,
         grandTotal: total
       };
 
+      // حفظ بيانات الفاتورة قبل الانتقال إلى success.html
       localStorage.setItem(
         "shoshoInvoice",
         JSON.stringify(order)
+      );
+
+      // للتأكد أثناء التجربة
+      console.log(
+        "Invoice saved:",
+        order
       );
     });
   }
