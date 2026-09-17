@@ -142,7 +142,86 @@
       outline: 3px solid rgba(217, 79, 139, 0.25);
       outline-offset: 3px;
     }
+.invoice-section {
+  display: none;
+  margin-top: 25px;
+  padding-top: 22px;
+  border-top: 1px solid #ead8ce;
+  text-align: left;
+}
+
+html[dir="rtl"] .invoice-section {
+  text-align: right;
+}
+
+.invoice-section h2 {
+  color: #d94f8b;
+  margin-top: 0;
+  text-align: center;
+}
+
+.invoice-info {
+  background: #fff7f3;
+  padding: 12px 15px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+.invoice-info p {
+  margin: 6px 0;
+}
+
+.invoice-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  font-size: 13px;
+}
+
+.invoice-table th,
+.invoice-table td {
+  border: 1px solid #ead8ce;
+  padding: 8px 5px;
+  text-align: center;
+}
+
+.invoice-table th {
+  background: #fff1f5;
+  color: #7a5a48;
+}
+
+.invoice-table tfoot td {
+  color: #d94f8b;
+  font-size: 15px;
+}
+
+.invoice-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 18px;
+  flex-wrap: wrap;
+}
+
+.invoice-buttons button {
+  border: none;
+  border-radius: 999px;
+  padding: 11px 16px;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.download-pdf-btn {
+  background: #d94f8b;
+}
+
+.share-pdf-btn {
+  background: #198754;
+}
+
   </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 
 <body>
@@ -200,6 +279,65 @@
     >
       <span id="instagramText">Contact us on Instagram</span>
     </a>
+<div id="invoiceSection" class="invoice-section">
+  <h2 id="invoiceTitle">Your Invoice</h2>
+
+  <div class="invoice-info">
+    <p>
+      <strong>Invoice No:</strong>
+      <span id="invoiceNumber">-</span>
+    </p>
+
+    <p>
+      <strong>Date:</strong>
+      <span id="invoiceDate">-</span>
+    </p>
+
+    <p>
+      <strong>Customer:</strong>
+      <span id="invoiceCustomer">-</span>
+    </p>
+  </div>
+
+  <table class="invoice-table">
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Qty</th>
+        <th>Price</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+
+    <tbody id="invoiceItems"></tbody>
+
+    <tfoot>
+      <tr>
+        <td colspan="3">
+          <strong>Grand Total</strong>
+        </td>
+        <td id="invoiceTotal">0.00 BD</td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <div class="invoice-buttons">
+    <button
+      type="button"
+      class="download-pdf-btn"
+      onclick="downloadInvoicePDF()">
+      Download PDF
+    </button>
+
+    <button
+      type="button"
+      class="share-pdf-btn"
+      onclick="shareInvoicePDF()">
+      Share PDF
+    </button>
+  </div>
+</div>
+
   </div>
 
   <script>
@@ -263,5 +401,114 @@
         ? "تواصل معنا عبر الإنستغرام"
         : "Contact us on Instagram";
   </script>
+<script>
+  const savedInvoice = localStorage.getItem("shoshoInvoice");
+
+  if (savedInvoice) {
+    const invoice = JSON.parse(savedInvoice);
+
+    document.getElementById("invoiceSection").style.display = "block";
+
+    document.getElementById("invoiceNumber").textContent =
+      invoice.invoiceNumber || "-";
+
+    document.getElementById("invoiceDate").textContent =
+      invoice.date || "-";
+
+    document.getElementById("invoiceCustomer").textContent =
+      invoice.customerName || "-";
+
+    const invoiceItems =
+      document.getElementById("invoiceItems");
+
+    invoiceItems.innerHTML = "";
+
+    invoice.items.forEach(function (item) {
+      invoiceItems.innerHTML += `
+        <tr>
+          <td>${item.name}</td>
+          <td>${item.quantity}</td>
+          <td>${Number(item.price).toFixed(2)} BD</td>
+          <td>${Number(item.total).toFixed(2)} BD</td>
+        </tr>
+      `;
+    });
+
+    document.getElementById("invoiceTotal").textContent =
+      Number(invoice.grandTotal).toFixed(2) + " BD";
+  }
+
+  function getInvoicePDFOptions() {
+    return {
+      margin: 8,
+      filename: "ShoSho-Matcha-Invoice.pdf",
+      image: {
+        type: "jpeg",
+        quality: 0.98
+      },
+      html2canvas: {
+        scale: 2,
+        useCORS: true
+      },
+      jsPDF: {
+        unit: "mm",
+        format: "a4",
+        orientation: "portrait"
+      }
+    };
+  }
+
+  function downloadInvoicePDF() {
+    const invoiceSection =
+      document.getElementById("invoiceSection");
+
+    html2pdf()
+      .set(getInvoicePDFOptions())
+      .from(invoiceSection)
+      .save();
+  }
+
+  async function shareInvoicePDF() {
+    const invoiceSection =
+      document.getElementById("invoiceSection");
+
+    const pdfBlob = await html2pdf()
+      .set(getInvoicePDFOptions())
+      .from(invoiceSection)
+      .outputPdf("blob");
+
+    const pdfFile = new File(
+      [pdfBlob],
+      "ShoSho-Matcha-Invoice.pdf",
+      {
+        type: "application/pdf"
+      }
+    );
+
+    if (
+      navigator.share &&
+      navigator.canShare &&
+      navigator.canShare({
+        files: [pdfFile]
+      })
+    ) {
+      await navigator.share({
+        title: "ShoSho Matcha Invoice",
+        text: "ShoSho Matcha Invoice",
+        files: [pdfFile]
+      });
+    } else {
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+      const link = document.createElement("a");
+
+      link.href = pdfUrl;
+      link.download = "ShoSho-Matcha-Invoice.pdf";
+      link.click();
+
+      URL.revokeObjectURL(pdfUrl);
+    }
+  }
+</script>
+
 </body>
 </html>
