@@ -586,122 +586,73 @@
     }
 
 
-    async function downloadInvoicePDF() {
-      const invoiceSection =
-        document.getElementById("invoiceSection");
+async function downloadInvoicePDF() {
+  const invoiceSection =
+    document.getElementById("invoiceSection");
 
-      if (!invoiceSection) {
-        alert("لم يتم العثور على الفاتورة");
-        return;
-      }
+  if (!invoiceSection) {
+    alert("Invoice section not found");
+    return;
+  }
 
-      if (typeof html2pdf === "undefined") {
-        alert("مكتبة PDF غير محملة");
-        return;
-      }
+  const clone = invoiceSection.cloneNode(true);
 
-      invoiceSection.style.display = "block";
+  const buttons =
+    clone.querySelector(".invoice-buttons");
 
-      await new Promise(function (resolve) {
-        requestAnimationFrame(function () {
-          requestAnimationFrame(resolve);
-        });
-      });
+  if (buttons) {
+    buttons.remove();
+  }
 
-      try {
-        await html2pdf()
-          .set(getInvoicePDFOptions())
-          .from(invoiceSection)
-          .save();
+  clone.style.display = "block";
+  clone.style.position = "fixed";
+  clone.style.left = "-10000px";
+  clone.style.top = "0";
+  clone.style.width = "700px";
+  clone.style.backgroundColor = "#ffffff";
+  clone.style.color = "#000000";
+  clone.style.padding = "20px";
 
-      } catch (error) {
-        console.error("PDF Error:", error);
-        alert("حدث خطأ أثناء إنشاء ملف PDF");
-      }
-    }
+  document.body.appendChild(clone);
 
+  await new Promise(function (resolve) {
+    setTimeout(resolve, 300);
+  });
 
-    async function shareInvoicePDF() {
-      const invoiceSection =
-        document.getElementById("invoiceSection");
+  try {
+    await html2pdf()
+      .set({
+        margin: 10,
+        filename: "ShoSho-Matcha-Invoice.pdf",
 
-      if (!invoiceSection) {
-        alert("لم يتم العثور على الفاتورة");
-        return;
-      }
+        image: {
+          type: "jpeg",
+          quality: 1
+        },
 
-      if (typeof html2pdf === "undefined") {
-        alert("مكتبة PDF غير محملة");
-        return;
-      }
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: "#ffffff"
+        },
 
-      invoiceSection.style.display = "block";
-
-      await new Promise(function (resolve) {
-        requestAnimationFrame(function () {
-          requestAnimationFrame(resolve);
-        });
-      });
-
-      try {
-        const pdfBlob =
-          await html2pdf()
-            .set(getInvoicePDFOptions())
-            .from(invoiceSection)
-            .output("blob");
-
-        const pdfFile =
-          new File(
-            [pdfBlob],
-            "ShoSho-Matcha-Invoice.pdf",
-            {
-              type: "application/pdf"
-            }
-          );
-
-        if (
-          navigator.share &&
-          navigator.canShare &&
-          navigator.canShare({
-            files: [pdfFile]
-          })
-        ) {
-          await navigator.share({
-            title: "ShoSho Matcha Invoice",
-            text: "ShoSho Matcha Invoice",
-            files: [pdfFile]
-          });
-        } else {
-          const pdfUrl =
-            URL.createObjectURL(pdfBlob);
-
-          const link =
-            document.createElement("a");
-
-          link.href = pdfUrl;
-          link.download =
-            "ShoSho-Matcha-Invoice.pdf";
-
-          document.body.appendChild(link);
-          link.click();
-          link.remove();
-
-          setTimeout(function () {
-            URL.revokeObjectURL(pdfUrl);
-          }, 1000);
+        jsPDF: {
+          unit: "mm",
+          format: "a4",
+          orientation: "portrait"
         }
+      })
+      .from(clone)
+      .save();
+  } catch (error) {
+    console.error("PDF error:", error);
+    alert("حدث خطأ أثناء إنشاء ملف PDF");
+  } finally {
+    clone.remove();
+  }
+}
 
-      } catch (error) {
-        console.error(
-          "PDF sharing error:",
-          error
-        );
-
-        alert(
-          "حدث خطأ أثناء إنشاء ملف PDF"
-        );
-      }
-    }
   </script>
 </body>
 </html>
