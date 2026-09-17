@@ -483,33 +483,42 @@
       };
     }
 
-    async function createInvoicePDF() {
-      const invoiceSection = document.getElementById('invoiceSection');
-      if (!invoiceSection) {
-        throw new Error('Invoice section not found');
-      }
+ async function createInvoicePDF() {
+  const invoiceSection = document.getElementById('invoiceSection');
+  if (!invoiceSection) {
+    throw new Error('Invoice section not found');
+  }
 
-      const clone = invoiceSection.cloneNode(true);
-      const buttons = clone.querySelector('.invoice-buttons');
-      if (buttons) buttons.remove();
+  // 1. عمل نسخة من قسم الفاتورة
+  const clone = invoiceSection.cloneNode(true);
+  
+  // إزالة الأزرار من النسخة حتى لا تظهر في الـ PDF
+  const buttons = clone.querySelector('.invoice-buttons');
+  if (buttons) buttons.remove();
 
-      clone.style.display = 'block';
-      clone.style.position = 'absolute';
-      clone.style.left = '-99999px';
-      clone.style.top = '0';
-      clone.style.width = '700px';
-      clone.style.maxWidth = '700px';
-      clone.style.backgroundColor = '#ffffff';
-      clone.style.color = '#000000';
-      clone.style.padding = '20px';
+  // 2. ضبط التنسيق ليتم رسمه بشكل صحيح داخل الصفحة دون ظهور فارغ
+  clone.style.display = 'block';
+  clone.style.position = 'fixed';
+  clone.style.top = '0';
+  clone.style.left = '0';
+  clone.style.zIndex = '-9999'; // إخفاء خلف العناصر
+  clone.style.opacity = '1';
+  clone.style.width = '700px';
+  clone.style.backgroundColor = '#ffffff';
+  clone.style.color = '#3d2b1f';
+  clone.style.padding = '20px';
 
-      document.body.appendChild(clone);
+  document.body.appendChild(clone);
 
-      await new Promise(resolve => {
-        requestAnimationFrame(() => {
-          requestAnimationFrame(resolve);
-        });
-      });
+  // انتظار انتهاء الرندر
+  await new Promise(resolve => setTimeout(resolve, 300));
+
+  try {
+    return await html2pdf().set(getInvoicePDFOptions()).from(clone).outputPdf('blob');
+  } finally {
+    clone.remove();
+  }
+}
 
       try {
         return await html2pdf().set(getInvoicePDFOptions()).from(clone).outputPdf('blob');
