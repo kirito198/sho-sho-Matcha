@@ -508,10 +508,10 @@
       clone.style.maxWidth = '600px';
       clone.style.backgroundColor = '#ffffff';
       clone.style.padding = '20px';
-
+clone.style.opacity = '0.01';
       document.body.appendChild(clone);
 
-      await new Promise(resolve => setTimeout(resolve, 200));
+      await new Promise(resolve => requestAnimationFrame(() => setTimeout(resolve, 700)));
 
       try {
         return await html2pdf().set(getInvoicePDFOptions()).from(clone).outputPdf('blob');
