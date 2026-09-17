@@ -142,7 +142,7 @@
       outline-offset: 3px;
     }
 
-    /* 🎀 تصميم الفاتورة كإيصال منظم لمنع تداخل النصوص 🎀 */
+    /* 🎀 تصميم الفاتورة 🎀 */
     .invoice-section {
       display: block;
       margin-top: 25px;
@@ -200,12 +200,19 @@
     .invoice-table th,
     .invoice-table td {
       border: 1px solid #ead8ce;
-      padding: 10px 6px;
+      padding: 10px 4px;
       text-align: center;
       word-wrap: break-word;
-      overflow-wrap: break-word;
       line-height: 1.4;
       vertical-align: middle;
+    }
+
+    /* إصلاح اتجاه عرض المبالغ لمنع التداخل واللخبطة في PDF */
+    .price-num {
+      direction: ltr !important;
+      unicode-bidi: embed;
+      display: inline-block;
+      white-space: nowrap;
     }
 
     .invoice-table td.product-cell {
@@ -365,10 +372,10 @@
       <table class="invoice-table">
         <thead>
           <tr>
-            <th id="thProduct" style="width: 45%;">Product</th>
-            <th id="thQty" style="width: 15%;">Qty</th>
-            <th id="thPrice" style="width: 20%;">Price</th>
-            <th id="thTotal" style="width: 20%;">Total</th>
+            <th id="thProduct" style="width: 42%;">Product</th>
+            <th id="thQty" style="width: 14%;">Qty</th>
+            <th id="thPrice" style="width: 22%;">Price</th>
+            <th id="thTotal" style="width: 22%;">Total</th>
           </tr>
         </thead>
 
@@ -379,7 +386,7 @@
             <td colspan="3">
               <strong id="labelGrandTotal">Grand Total</strong>
             </td>
-            <td id="invoiceTotal">0.00 BD</td>
+            <td><span id="invoiceTotal" class="price-num">0.00 BD</span></td>
           </tr>
         </tfoot>
       </table>
@@ -465,11 +472,11 @@
         row.appendChild(quantityCell);
 
         const priceCell = document.createElement('td');
-        priceCell.textContent = `${price.toFixed(2)} BD`;
+        priceCell.innerHTML = `<span class="price-num">${price.toFixed(2)} BD</span>`;
         row.appendChild(priceCell);
 
         const totalCell = document.createElement('td');
-        totalCell.textContent = `${itemTotal.toFixed(2)} BD`;
+        totalCell.innerHTML = `<span class="price-num">${itemTotal.toFixed(2)} BD</span>`;
         row.appendChild(totalCell);
 
         tbody.appendChild(row);
@@ -607,9 +614,9 @@
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-      // قراءة شرط اللغة بمرونة: لن تحول الإنجليزي إلى عربي إلا إذا اختار المستخدم ذلك صراحة
+      // ضبط اللغة الافتراضية إلى الإنجليزية بشكل قاطع إلا إذا عيّن المستخدم "ar" صراحة
       const savedLang = localStorage.getItem("siteLanguage");
-      const isArabic = savedLang === "ar";
+      const isArabic = (savedLang === "ar");
 
       if (isArabic) {
         document.documentElement.lang = "ar";
