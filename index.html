@@ -870,40 +870,72 @@ let isArabic = false;
     }
 
     document
-      .getElementById("orderForm")
-      .addEventListener("submit", function(event) {
-        if (cart.length === 0) {
-          event.preventDefault();
+  .getElementById("orderForm")
+  .addEventListener("submit", function (event) {
+    if (cart.length === 0) {
+      event.preventDefault();
+      alert("Please add at least one product to your cart.");
+      return;
+    }
 
-          alert("Please add at least one product to your cart.");
-          return;
-        }
-
-        const missingName = cart.some(function(item) {
-          return item.personName.trim() === "";
-        });
-
-        if (missingName) {
-          event.preventDefault();
-
-          alert(
-            "Please write the person's name for every product."
-          );
-
-          return;
-        }
-
-        updateOrderDetails();
-      });
-
-    window.addEventListener("click", function(event) {
-      const modal =
-        document.getElementById("orderModal");
-
-      if (event.target === modal) {
-        closeOrderForm();
-      }
+    const missingName = cart.some(function (item) {
+      return !item.personName || item.personName.trim() === "";
     });
+
+    if (missingName) {
+      event.preventDefault();
+      alert("Please write the person's name for every product.");
+      return;
+    }
+
+    const invoiceItems = cart.map(function (item) {
+      const price = Number(
+        String(item.price).replace(/[^0-9.]/g, "")
+      );
+
+      const quantity = Number(item.quantity || 1);
+
+      return {
+        name: item.product,
+        personName: item.personName,
+        quantity: quantity,
+        price: price,
+        total: price * quantity
+      };
+    });
+
+    const grandTotal = invoiceItems.reduce(function (
+      total,
+      item
+    ) {
+      return total + item.total;
+    }, 0);
+
+    const invoice = {
+      invoiceNumber:
+        "SHO-" + Date.now().toString().slice(-8),
+
+      date: new Date().toISOString(),
+
+      customerName:
+        document.getElementById("name").value.trim(),
+
+      customerInstagram:
+        document.getElementById("instagram").value.trim(),
+
+      items: invoiceItems,
+
+      grandTotal: grandTotal
+    };
+
+    localStorage.setItem(
+      "shoshoInvoice",
+      JSON.stringify(invoice)
+    );
+
+    updateOrderDetails();
+  });
+
 
     document.addEventListener("keydown", function(event) {
       if (event.key === "Escape") {
@@ -1096,7 +1128,6 @@ document.querySelectorAll(".card .btn").forEach(function(button) {
 
         date: new Date().toLocaleDateString("en-GB"),
 
-        ),
 
         customerName: customerName || "-",
         instagram: instagram || "-",
