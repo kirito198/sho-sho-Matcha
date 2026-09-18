@@ -531,7 +531,7 @@
         setTimeout(() => URL.revokeObjectURL(pdfUrl), 1000);
       } catch (error) {
         console.error('PDF Download Error:', error);
-        alert('حدث خطأ أثناء تحميل الفاتورة');
+        alert(document.documentElement.lang === 'ar' ? 'حدث خطأ أثناء تحميل الفاتورة' : 'Error downloading PDF');
       } finally {
         if (btn) btn.disabled = false;
       }
@@ -557,17 +557,24 @@
         }
       } catch (error) {
         console.error('PDF Share Error:', error);
-        alert('حدث خطأ أثناء مشاركة الفاتورة');
+        alert(document.documentElement.lang === 'ar' ? 'حدث خطأ أثناء مشاركة الفاتورة' : 'Error sharing PDF');
       } finally {
         if (btn) btn.disabled = false;
       }
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-      const savedLang = localStorage.getItem("siteLanguage") 
+      // 1. فحص اللغة من URL أولاً ثم التخزين المحلي بجميع المسميات
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlLang = urlParams.get('lang');
+      
+      const savedLang = urlLang 
+                     || localStorage.getItem("siteLanguage") 
                      || localStorage.getItem("lang") 
-                     || localStorage.getItem("language");
+                     || localStorage.getItem("language")
+                     || localStorage.getItem("userLanguage");
 
+      // 2. التحقق مما إذا كانت اللغة إنجليزية فعلاً
       const isEnglish = savedLang && savedLang.toLowerCase().startsWith("en");
 
       if (isEnglish) {
@@ -602,6 +609,38 @@
         document.getElementById("labelGrandTotal").textContent = "Grand Total";
         document.getElementById("downloadPdfBtn").textContent = "Download PDF";
         document.getElementById("sharePdfBtn").textContent = "Share PDF";
+      } else {
+        document.documentElement.lang = "ar";
+        document.documentElement.dir = "rtl";
+
+        document.getElementById("thankYouTitle").textContent = "شكراً لك!";
+        document.getElementById("madeWithLove").textContent = "صنع بكل حب 🎀";
+        document.getElementById("successMessage").textContent = "تم إرسال طلبك بنجاح.";
+        document.getElementById("paymentMessage").textContent = "يرجى إكمال عملية الدفع باستخدام BenefitPay – فوري+، ثم إرسال إشعار التحويل لنا عبر الإنستغرام.";
+        document.getElementById("paymentTitle").textContent = "تعليمات الدفع (BenefitPay – فوري+)";
+        
+        document.getElementById("paymentSteps").innerHTML = `
+          <li>صوّر رمز QR.</li>
+          <li>افتح تطبيق BenefitPay.</li>
+          <li>اختار فوري+ واضغط على مسح QR.</li>
+          <li>بعد فتح الكاميرا، اضغط أعلى اليمين لرفع صورة.</li>
+          <li>اختار صورة رمز QR من موقعنا وأكمل عملية الدفع.</li>
+          <li>أرسل عملية التحويل لنا عبر الإنستغرام لتأكيد طلبك.</li>
+        `;
+
+        document.getElementById("paymentNote").innerHTML = `<strong>ملاحظة:</strong> سنرسل لك موقع الاستلام بعد استلام عملية التحويل.`;
+        document.getElementById("instagramText").textContent = "تواصل معنا عبر الإنستغرام 🎀";
+        document.getElementById("invoiceTitle").textContent = "فاتورة الطلب 🎀";
+        document.getElementById("labelInvNo").textContent = "رقم الفاتورة:";
+        document.getElementById("labelDate").textContent = "التاريخ:";
+        document.getElementById("labelCustomer").textContent = "العميل:";
+        document.getElementById("thProduct").textContent = "المنتج";
+        document.getElementById("thQty").textContent = "الكمية";
+        document.getElementById("thPrice").textContent = "السعر";
+        document.getElementById("thTotal").textContent = "المجموع";
+        document.getElementById("labelGrandTotal").textContent = "المجموع الكلي";
+        document.getElementById("downloadPdfBtn").textContent = "تحميل الفاتورة PDF";
+        document.getElementById("sharePdfBtn").textContent = "مشاركة الفاتورة PDF";
       }
 
       loadInvoice();
