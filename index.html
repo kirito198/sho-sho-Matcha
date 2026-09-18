@@ -561,6 +561,10 @@
         id="orderForm"
       >
         <input type="hidden" name="form-name" value="orders">
+        
+        <!-- حقول مخفية إضافية لإرسال رقم الفاتورة والإجمالي للإيميل عبر Netlify -->
+        <input type="hidden" name="invoice_number" id="hiddenInvoiceNumber">
+        <input type="hidden" name="grand_total" id="hiddenGrandTotal">
 
         <label for="name">Your Name</label>
         <input
@@ -957,9 +961,14 @@
       const instagram = document.getElementById("instagram").value.trim();
       const pickupTime = document.getElementById("pickup-time").value;
       const notes = document.getElementById("notes").value.trim();
+      const generatedInvoiceNum = "INV-" + Date.now().toString().slice(-6);
+
+      // تحديث الحقول المخفية الموجهة لإيميل Netlify
+      document.getElementById("hiddenInvoiceNumber").value = generatedInvoiceNum;
+      document.getElementById("hiddenGrandTotal").value = total.toFixed(1) + " BD";
 
       const order = {
-        invoiceNumber: "INV-" + Date.now().toString().slice(-6),
+        invoiceNumber: generatedInvoiceNum,
         date: new Date().toLocaleDateString("en-GB"),
         customerName: customerName || "-",
         instagram: instagram || "-",
