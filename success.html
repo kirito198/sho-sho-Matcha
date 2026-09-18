@@ -165,10 +165,13 @@
       border-top: 1px solid #ead8ce;
     }
 
+    /* منع تداخل كلمات عنوان الفاتورة */
     .invoice-section h2 {
       color: #d94f8b;
       margin-top: 0;
+      margin-bottom: 15px;
       text-align: center;
+      white-space: nowrap;
     }
 
     .invoice-info {
@@ -178,11 +181,22 @@
       margin-bottom: 15px;
     }
 
+    /* إصلاح محاذاة العناوين والبيانات لتكون متجاورة دائماً */
     .invoice-info p {
       margin: 8px 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: flex-start !important;
+      gap: 8px !important;
+      text-align: initial !important;
+    }
+
+    html[lang="en"] .invoice-info p {
+      direction: ltr !important;
+    }
+
+    html[lang="ar"] .invoice-info p {
+      direction: rtl !important;
     }
 
     .invoice-table {
@@ -489,6 +503,7 @@
 
     if (isEnglish) {
       document.documentElement.lang = "en";
+      document.documentElement.dir = "ltr";
       
       document.getElementById("thankYouTitle").textContent = "Thank You!";
       document.getElementById("madeWithLove").textContent = "Made with love 🎀";
@@ -520,6 +535,7 @@
       document.getElementById("sharePdfBtn").textContent = "Share PDF";
     } else {
       document.documentElement.lang = "ar";
+      document.documentElement.dir = "rtl";
       
       document.getElementById("thankYouTitle").textContent = "شكراً لك!";
       document.getElementById("madeWithLove").textContent = "صنع بكل حب 🎀";
@@ -633,10 +649,9 @@
     }
   }
 
-  // تنفيذ العمليات بالترتيب الصحيح عند تحميل الصفحة
   document.addEventListener('DOMContentLoaded', function () {
-    loadInvoiceData(); // 1. جلب بيانات الفاتورة أولاً
-    applyLanguage();    // 2. تطبيق اللغة والترجمة حسب الاختيار
+    loadInvoiceData();
+    applyLanguage();
   });
 </script>
 </body>
