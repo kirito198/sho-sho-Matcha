@@ -902,6 +902,9 @@
       document.querySelector('label[for="pickup-time"]').textContent =
         isArabic ? "وقت الاستلام" : "Pickup Time";
 
+      document.querySelector('#pickup-time option[value=""]').textContent =
+  isArabic ? "اختر الوقت..." : "Choose time...";
+
       document.querySelector('label[for="notes"]').textContent =
         isArabic ? "ملاحظات" : "Notes";
 
