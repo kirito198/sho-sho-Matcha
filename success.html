@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -63,11 +63,11 @@
       border-radius: 14px;
       background: #fff;
       overflow: hidden;
-      text-align: left;
+      text-align: right;
     }
 
-    html[dir="rtl"] .payment-instructions {
-      text-align: right;
+    html[dir="ltr"] .payment-instructions {
+      text-align: left;
     }
 
     .payment-instructions summary {
@@ -84,17 +84,17 @@
     }
 
     .payment-instructions summary::after {
-      content: "+";
-      float: right;
+      content: "−";
+      float: left;
       font-size: 20px;
     }
 
-    html[dir="rtl"] .payment-instructions summary::after {
-      float: left;
+    html[dir="ltr"] .payment-instructions summary::after {
+      float: right;
     }
 
-    .payment-instructions[open] summary::after {
-      content: "−";
+    .payment-instructions:not([open]) summary::after {
+      content: "+";
     }
 
     .instructions-content {
@@ -116,13 +116,14 @@
     }
 
     .instructions-content ol {
-      padding-left: 20px;
+      padding-right: 25px;
+      padding-left: 0;
       margin: 0 0 12px;
     }
 
-    html[dir="rtl"] .instructions-content ol {
-      padding-left: 0;
-      padding-right: 25px;
+    html[dir="ltr"] .instructions-content ol {
+      padding-right: 0;
+      padding-left: 20px;
     }
 
     .note {
@@ -130,11 +131,11 @@
       border-radius: 10px;
       background: #fff7f3;
       color: #5a3c2c !important;
-      text-align: left;
+      text-align: right;
     }
 
-    html[dir="rtl"] .note {
-      text-align: right;
+    html[dir="ltr"] .note {
+      text-align: left;
     }
 
     .instagram-btn {
@@ -162,11 +163,11 @@
       margin-top: 25px;
       padding-top: 22px;
       border-top: 1px solid #ead8ce;
-      text-align: left;
+      text-align: right;
     }
 
-    html[dir="rtl"] .invoice-section {
-      text-align: right;
+    html[dir="ltr"] .invoice-section {
+      text-align: left;
     }
 
     .invoice-section h2 {
@@ -263,22 +264,21 @@
 <body>
   <div class="box">
     <span class="ribbon-icon">🎀</span>
-    <h1 id="thankYouTitle">Thank You!</h1>
+    <h1 id="thankYouTitle">شكراً لك!</h1>
     
-    <div class="made-with-love" id="madeWithLove">Made with love 🎀</div>
+    <div class="made-with-love" id="madeWithLove">صنع بكل حب 🎀</div>
 
     <p id="successMessage">
-      Your order has been submitted successfully.
+      تم إرسال طلبك بنجاح.
     </p>
 
     <p id="paymentMessage">
-      Please complete the payment using BenefitPay – Fawri+,
-      then send the transaction confirmation to us through Instagram.
+      يرجى إكمال عملية الدفع باستخدام BenefitPay – فوري+، ثم إرسال إشعار التحويل لنا عبر الإنستغرام.
     </p>
 
     <details class="payment-instructions" open>
       <summary id="paymentTitle">
-        Payment Instructions (BenefitPay – Fawri+)
+        تعليمات الدفع (BenefitPay – فوري+)
       </summary>
 
       <div class="instructions-content">
@@ -289,23 +289,17 @@
         >
 
         <ol id="paymentSteps">
-          <li>Capture the QR code.</li>
-          <li>Open your BenefitPay app.</li>
-          <li>Choose Fawri+ and click on “Scan QR”.</li>
-          <li>
-            After opening the camera, click on the top right to upload a photo.
-          </li>
-          <li>
-            Select the QR code you captured from our website and complete the payment.
-          </li>
-          <li>
-            Kindly share the transaction with us on Instagram to confirm your order.
-          </li>
+          <li>صوّر رمز QR.</li>
+          <li>افتح تطبيق BenefitPay.</li>
+          <li>اختار فوري+ واضغط على مسح QR.</li>
+          <li>بعد فتح الكاميرا، اضغط أعلى اليمين لرفع صورة.</li>
+          <li>اختار صورة رمز QR من موقعنا وأكمل عملية الدفع.</li>
+          <li>أرسل عملية التحويل لنا عبر الإنستغرام لتأكيد طلبك.</li>
         </ol>
 
         <p class="note" id="paymentNote">
-          <strong>Note:</strong>
-          We will share the pickup location with you after receiving the payment transaction.
+          <strong>ملاحظة:</strong>
+          سنرسل لك موقع الاستلام بعد استلام عملية التحويل.
         </p>
       </div>
     </details>
@@ -316,25 +310,25 @@
       target="_blank"
       rel="noopener noreferrer"
     >
-      <span id="instagramText">Contact us on Instagram 🎀</span>
+      <span id="instagramText">تواصل معنا عبر الإنستغرام 🎀</span>
     </a>
 
     <div id="invoiceSection" class="invoice-section">
-      <h2 id="invoiceTitle">Your Invoice 🎀</h2>
+      <h2 id="invoiceTitle">فاتورة الطلب 🎀</h2>
 
       <div class="invoice-info">
         <p>
-          <strong id="labelInvNo">Invoice No:</strong>
+          <strong id="labelInvNo">رقم الفاتورة:</strong>
           <span id="invoiceNumber">-</span>
         </p>
 
         <p>
-          <strong id="labelDate">Date:</strong>
+          <strong id="labelDate">التاريخ:</strong>
           <span id="invoiceDate">-</span>
         </p>
 
         <p>
-          <strong id="labelCustomer">Customer:</strong>
+          <strong id="labelCustomer">العميل:</strong>
           <span id="invoiceCustomer">-</span>
         </p>
       </div>
@@ -342,10 +336,10 @@
       <table class="invoice-table">
         <thead>
           <tr>
-            <th id="thProduct">Product</th>
-            <th id="thQty">Qty</th>
-            <th id="thPrice">Price</th>
-            <th id="thTotal">Total</th>
+            <th id="thProduct">المنتج</th>
+            <th id="thQty">الكمية</th>
+            <th id="thPrice">السعر</th>
+            <th id="thTotal">المجموع</th>
           </tr>
         </thead>
 
@@ -354,7 +348,7 @@
         <tfoot>
           <tr>
             <td colspan="3">
-              <strong id="labelGrandTotal"><bdi class="bdi-safe">Grand Total</bdi></strong>
+              <strong id="labelGrandTotal"><bdi class="bdi-safe">المجموع الكلي</bdi></strong>
             </td>
             <td id="invoiceTotal"><bdi class="bdi-safe">0.00 BD</bdi></td>
           </tr>
@@ -368,7 +362,7 @@
           id="downloadPdfBtn"
           onclick="downloadInvoicePDF()"
         >
-          Download PDF
+          تحميل الفاتورة PDF
         </button>
 
         <button
@@ -377,7 +371,7 @@
           id="sharePdfBtn"
           onclick="shareInvoicePDF()"
         >
-          Share PDF
+          مشاركة الفاتورة PDF
         </button>
       </div>
     </div>
@@ -401,7 +395,7 @@
       }
       if (!d || isNaN(d.getTime())) return raw;
 
-      return d.toLocaleDateString('en-US', {
+      return d.toLocaleDateString('ar-BH', {
         numberingSystem: 'latn',
         year: 'numeric',
         month: 'long',
@@ -452,10 +446,7 @@
 
     function loadInvoice() {
       const savedInvoice = localStorage.getItem('shoshoInvoice');
-      if (!savedInvoice) {
-        console.error('shoshoInvoice not found in localStorage');
-        return;
-      }
+      if (!savedInvoice) return;
 
       let invoice;
       try {
@@ -465,10 +456,7 @@
         return;
       }
 
-      if (!invoice.items || !Array.isArray(invoice.items)) {
-        console.error('Invoice items missing or not an array', invoice.items);
-        return;
-      }
+      if (!invoice || !invoice.items || !Array.isArray(invoice.items)) return;
 
       const invoiceSection = document.getElementById('invoiceSection');
       if (invoiceSection) invoiceSection.style.display = 'block';
@@ -514,9 +502,7 @@
 
     async function createInvoicePDF() {
       const invoiceSection = document.getElementById('invoiceSection');
-      if (!invoiceSection) {
-        throw new Error('Invoice section not found');
-      }
+      if (!invoiceSection) throw new Error('Invoice section not found');
 
       const buttons = invoiceSection.querySelector('.invoice-buttons');
       if (buttons) buttons.style.display = 'none';
@@ -545,7 +531,7 @@
         setTimeout(() => URL.revokeObjectURL(pdfUrl), 1000);
       } catch (error) {
         console.error('PDF Download Error:', error);
-        alert(document.documentElement.lang === 'ar' ? 'حدث خطأ أثناء تحميل الفاتورة' : 'Error downloading PDF');
+        alert('حدث خطأ أثناء تحميل الفاتورة');
       } finally {
         if (btn) btn.disabled = false;
       }
@@ -571,53 +557,20 @@
         }
       } catch (error) {
         console.error('PDF Share Error:', error);
-        alert(document.documentElement.lang === 'ar' ? 'حدث خطأ أثناء مشاركة الفاتورة' : 'Error sharing PDF');
+        alert('حدث خطأ أثناء مشاركة الفاتورة');
       } finally {
         if (btn) btn.disabled = false;
       }
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-      // 1. الفحص الدقيق للغة من وسوم الصفحة والـ localStorage
-      const htmlLang = document.documentElement.lang || "";
-      const savedLang = localStorage.getItem("siteLanguage") || localStorage.getItem("lang") || localStorage.getItem("language");
-      
-      const currentLang = htmlLang || savedLang || "en";
-      const isArabic = currentLang.toLowerCase().startsWith("ar");
+      const savedLang = localStorage.getItem("siteLanguage") 
+                     || localStorage.getItem("lang") 
+                     || localStorage.getItem("language");
 
-      if (isArabic) {
-        document.documentElement.lang = "ar";
-        document.documentElement.dir = "rtl";
+      const isEnglish = savedLang && savedLang.toLowerCase().startsWith("en");
 
-        document.getElementById("thankYouTitle").textContent = "شكراً لك!";
-        document.getElementById("madeWithLove").textContent = "صنع بكل حب 🎀";
-        document.getElementById("successMessage").textContent = "تم إرسال طلبك بنجاح.";
-        document.getElementById("paymentMessage").textContent = "يرجى إكمال عملية الدفع باستخدام BenefitPay – فوري+، ثم إرسال إشعار التحويل لنا عبر الإنستغرام.";
-        document.getElementById("paymentTitle").textContent = "تعليمات الدفع (BenefitPay – فوري+)";
-        
-        document.getElementById("paymentSteps").innerHTML = `
-          <li>صوّر رمز QR.</li>
-          <li>افتح تطبيق BenefitPay.</li>
-          <li>اختار فوري+ واضغط على مسح QR.</li>
-          <li>بعد فتح الكاميرا، اضغط أعلى اليمين لرفع صورة.</li>
-          <li>اختار صورة رمز QR من موقعنا وأكمل عملية الدفع.</li>
-          <li>أرسل عملية التحويل لنا عبر الإنستغرام لتأكيد طلبك.</li>
-        `;
-
-        document.getElementById("paymentNote").innerHTML = `<strong>ملاحظة:</strong> سنرسل لك موقع الاستلام بعد استلام عملية التحويل.`;
-        document.getElementById("instagramText").textContent = "تواصل معنا عبر الإنستغرام 🎀";
-        document.getElementById("invoiceTitle").textContent = "فاتورة الطلب 🎀";
-        document.getElementById("labelInvNo").textContent = "رقم الفاتورة:";
-        document.getElementById("labelDate").textContent = "التاريخ:";
-        document.getElementById("labelCustomer").textContent = "العميل:";
-        document.getElementById("thProduct").textContent = "المنتج";
-        document.getElementById("thQty").textContent = "الكمية";
-        document.getElementById("thPrice").textContent = "السعر";
-        document.getElementById("thTotal").textContent = "المجموع";
-        document.getElementById("labelGrandTotal").textContent = "المجموع الكلي";
-        document.getElementById("downloadPdfBtn").textContent = "تحميل الفاتورة PDF";
-        document.getElementById("sharePdfBtn").textContent = "مشاركة الفاتورة PDF";
-      } else {
+      if (isEnglish) {
         document.documentElement.lang = "en";
         document.documentElement.dir = "ltr";
 
