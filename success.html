@@ -163,11 +163,6 @@
       margin-top: 25px;
       padding-top: 22px;
       border-top: 1px solid #ead8ce;
-      text-align: right;
-    }
-
-    html[dir="ltr"] .invoice-section {
-      text-align: left;
     }
 
     .invoice-section h2 {
@@ -184,7 +179,10 @@
     }
 
     .invoice-info p {
-      margin: 6px 0;
+      margin: 8px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     .invoice-table {
@@ -395,7 +393,6 @@
       }
       if (!d || isNaN(d.getTime())) return raw;
 
-      // تنسيق التاريخ بالأرقام فقط (DD/MM/YYYY)
       const day = String(d.getDate()).padStart(2, '0');
       const month = String(d.getMonth() + 1).padStart(2, '0');
       const year = d.getFullYear();
@@ -564,7 +561,6 @@
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-      // 1. فحص اللغة من URL أولاً ثم التخزين المحلي بجميع المسميات
       const urlParams = new URLSearchParams(window.location.search);
       const urlLang = urlParams.get('lang');
       
@@ -574,7 +570,6 @@
                      || localStorage.getItem("language")
                      || localStorage.getItem("userLanguage");
 
-      // 2. التحقق مما إذا كانت اللغة إنجليزية فعلاً
       const isEnglish = savedLang && savedLang.toLowerCase().startsWith("en");
 
       if (isEnglish) {
