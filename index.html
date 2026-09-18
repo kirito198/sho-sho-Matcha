@@ -679,6 +679,11 @@
     let notificationTimeout;
     let isArabic = false;
 
+    // استرجاع اللغة المحفوظة إن وجدت
+    if (localStorage.getItem("siteLanguage") === "ar") {
+      isArabic = true;
+    }
+
     function addToCart(productName, price) {
       cart.push({
         product: productName,
@@ -912,7 +917,7 @@
       updateCart();
     });
 
-    // معالجة تقديم الطلب وحفظ الفاتورة
+    // معالجة تقديم الطلب وحفظ الفاتورة واللغة
     document.getElementById("orderForm").addEventListener("submit", function (event) {
       if (cart.length === 0) {
         event.preventDefault();
@@ -929,6 +934,9 @@
         alert(isArabic ? "يرجى كتابة اسم الشخص لكل منتج في السلة." : "Please write the person's name for every product.");
         return;
       }
+
+      // حفظ قيمة اللغة الحالية
+      localStorage.setItem("siteLanguage", isArabic ? "ar" : "en");
 
       const orderItems = cart.map(function (item) {
         const price = parseFloat(String(item.price).replace(/[^0-9.]/g, "")) || 0;
