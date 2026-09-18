@@ -375,271 +375,269 @@
     </div>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
-  <script>
-    function formatDateSafe(raw) {
-      if (!raw) return '-';
-      let d;
-      if (raw instanceof Date) d = raw;
-      else if (!isNaN(Number(raw))) d = new Date(Number(raw));
-      else {
-        const parts = String(raw).split('/');
-        if (parts.length === 3) {
-          d = new Date(parts[2], parts[1] - 1, parts[0]);
-        } else {
-          d = new Date(String(raw));
-        }
-      }
-      if (!d || isNaN(d.getTime())) return raw;
-
-      const day = String(d.getDate()).padStart(2, '0');
-      const month = String(d.getMonth() + 1).padStart(2, '0');
-      const year = d.getFullYear();
-
-      return `${day}/${month}/${year}`;
-    }
-
-    function renderItemsAndComputeTotal(items) {
-      const tbody = document.getElementById('invoiceItems');
-      if (!tbody) return 0;
-      tbody.innerHTML = '';
-
-      let grandTotal = 0;
-
-      items.forEach(function (item) {
-        const name = item.name || item.productName || item.title || item.product || '-';
-        const person = item.personName ? ` (${item.personName})` : '';
-        const qty = Number(item.quantity ?? item.qty ?? 1);
-        const price = Number(item.price ?? item.unitPrice ?? 0);
-        const itemTotal = item.total !== undefined ? Number(item.total) : (price * qty);
-
-        grandTotal += itemTotal;
-
-        const row = document.createElement('tr');
-
-        const productCell = document.createElement('td');
-        productCell.innerHTML = `<bdi class="bdi-safe">${name}${person}</bdi>`;
-        row.appendChild(productCell);
-
-        const quantityCell = document.createElement('td');
-        quantityCell.textContent = qty;
-        row.appendChild(quantityCell);
-
-        const priceCell = document.createElement('td');
-        priceCell.innerHTML = `<bdi class="bdi-safe">${price.toFixed(2)} BD</bdi>`;
-        row.appendChild(priceCell);
-
-        const totalCell = document.createElement('td');
-        totalCell.innerHTML = `<bdi class="bdi-safe">${itemTotal.toFixed(2)} BD</bdi>`;
-        row.appendChild(totalCell);
-
-        tbody.appendChild(row);
-      });
-
-      document.getElementById('invoiceTotal').innerHTML = `<bdi class="bdi-safe">${grandTotal.toFixed(2)} BD</bdi>`;
-      return grandTotal;
-    }
-
-    function loadInvoice() {
-      const savedInvoice = localStorage.getItem('shoshoInvoice');
-      if (!savedInvoice) return;
-
-      let invoice;
-      try {
-        invoice = JSON.parse(savedInvoice);
-      } catch (err) {
-        console.error('Invoice JSON parse error', err);
-        return;
-      }
-
-      if (!invoice || !invoice.items || !Array.isArray(invoice.items)) return;
-
-      const invoiceSection = document.getElementById('invoiceSection');
-      if (invoiceSection) invoiceSection.style.display = 'block';
-
-      document.getElementById('invoiceNumber').textContent = invoice.invoiceNumber || invoice.id || '-';
-
-      const rawDate = invoice.date ?? invoice.createdAt ?? invoice.timestamp;
-      document.getElementById('invoiceDate').textContent = formatDateSafe(rawDate);
-
-      const customerName =
-        invoice.customerName ||
-        invoice.customer?.name ||
-        invoice.user?.fullName ||
-        invoice.billingName ||
-        invoice.name ||
-        '-';
-      document.getElementById('invoiceCustomer').textContent = customerName;
-
-      const computedTotal = renderItemsAndComputeTotal(invoice.items);
-
-      if (!invoice.grandTotal) {
-        invoice.grandTotal = computedTotal;
-      }
-    }
-
-    function getInvoicePDFOptions() {
-      return {
-        margin: [10, 10, 10, 10],
-        filename: (document.getElementById('invoiceNumber')?.textContent || 'ShoSho-Matcha-Invoice') + '.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-          allowTaint: true,
-          backgroundColor: '#ffffff',
-          scrollY: 0,
-          scrollX: 0
-        },
-        pagebreak: { mode: ['css', 'legacy'] },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-      };
-    }
-
-    async function createInvoicePDF() {
-      const invoiceSection = document.getElementById('invoiceSection');
-      if (!invoiceSection) throw new Error('Invoice section not found');
-
-      const buttons = invoiceSection.querySelector('.invoice-buttons');
-      if (buttons) buttons.style.display = 'none';
-
-      try {
-        const opt = getInvoicePDFOptions();
-        return await html2pdf().set(opt).from(invoiceSection).outputPdf('blob');
-      } finally {
-        if (buttons) buttons.style.display = 'flex';
-      }
-    }
-
-    async function downloadInvoicePDF() {
-      const btn = document.getElementById('downloadPdfBtn');
-      if (btn) btn.disabled = true;
-
-      try {
-        const pdfBlob = await createInvoicePDF();
-        const pdfUrl = URL.createObjectURL(pdfBlob);
-        const link = document.createElement('a');
-        link.href = pdfUrl;
-        link.download = (document.getElementById('invoiceNumber')?.textContent || 'ShoSho-Matcha-Invoice') + '.pdf';
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-        setTimeout(() => URL.revokeObjectURL(pdfUrl), 1000);
-      } catch (error) {
-        console.error('PDF Download Error:', error);
-        alert(document.documentElement.lang === 'ar' ? 'حدث خطأ أثناء تحميل الفاتورة' : 'Error downloading PDF');
-      } finally {
-        if (btn) btn.disabled = false;
-      }
-    }
-
-    async function shareInvoicePDF() {
-      const btn = document.getElementById('sharePdfBtn');
-      if (btn) btn.disabled = true;
-
-      try {
-        const pdfBlob = await createInvoicePDF();
-        const fileName = (document.getElementById('invoiceNumber')?.textContent || 'ShoSho-Matcha-Invoice') + '.pdf';
-        const pdfFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
-
-        if (navigator.share && navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
-          await navigator.share({
-            title: 'ShoSho Matcha Invoice',
-            text: 'Your order invoice from ShoSho Matcha',
-            files: [pdfFile]
-          });
-        } else {
-          downloadInvoicePDF();
-        }
-      } catch (error) {
-        console.error('PDF Share Error:', error);
-        alert(document.documentElement.lang === 'ar' ? 'حدث خطأ أثناء مشاركة الفاتورة' : 'Error sharing PDF');
-      } finally {
-        if (btn) btn.disabled = false;
-      }
-    }
-
-    document.addEventListener('DOMContentLoaded', function () {
-      const urlParams = new URLSearchParams(window.location.search);
-      const urlLang = urlParams.get('lang');
-      
-      const savedLang = urlLang 
-                     || localStorage.getItem("siteLanguage") 
-                     || localStorage.getItem("lang") 
-                     || localStorage.getItem("language")
-                     || localStorage.getItem("userLanguage");
-
-      const isEnglish = savedLang && savedLang.toLowerCase().startsWith("en");
-
-      if (isEnglish) {
-        document.documentElement.lang = "en";
-        document.documentElement.dir = "ltr";
-
-        document.getElementById("thankYouTitle").textContent = "Thank You!";
-        document.getElementById("madeWithLove").textContent = "Made with love 🎀";
-        document.getElementById("successMessage").textContent = "Your order has been submitted successfully.";
-        document.getElementById("paymentMessage").textContent = "Please complete the payment using BenefitPay – Fawri+, then send the transaction confirmation to us through Instagram.";
-        document.getElementById("paymentTitle").textContent = "Payment Instructions (BenefitPay – Fawri+)";
-        
-        document.getElementById("paymentSteps").innerHTML = `
-          <li>Capture the QR code.</li>
-          <li>Open your BenefitPay app.</li>
-          <li>Choose Fawri+ and click on “Scan QR”.</li>
-          <li>After opening the camera, click on the top right to upload a photo.</li>
-          <li>Select the QR code you captured from our website and complete the payment.</li>
-          <li>Kindly share the transaction with us on Instagram to confirm your order.</li>
-        `;
-
-        document.getElementById("paymentNote").innerHTML = `<strong>Note:</strong> We will share the pickup location with you after receiving the payment transaction.`;
-        document.getElementById("instagramText").textContent = "Contact us on Instagram 🎀";
-        document.getElementById("invoiceTitle").textContent = "Your Invoice 🎀";
-        document.getElementById("labelInvNo").textContent = "Invoice No:";
-        document.getElementById("labelDate").textContent = "Date:";
-        document.getElementById("labelCustomer").textContent = "Customer:";
-        document.getElementById("thProduct").textContent = "Product";
-        document.getElementById("thQty").textContent = "Qty";
-        document.getElementById("thPrice").textContent = "Price";
-        document.getElementById("thTotal").textContent = "Total";
-        document.getElementById("labelGrandTotal").textContent = "Grand Total";
-        document.getElementById("downloadPdfBtn").textContent = "Download PDF";
-        document.getElementById("sharePdfBtn").textContent = "Share PDF";
+<script>
+  function formatDateSafe(raw) {
+    if (!raw) return '-';
+    let d;
+    if (raw instanceof Date) d = raw;
+    else if (!isNaN(Number(raw))) d = new Date(Number(raw));
+    else {
+      const parts = String(raw).split('/');
+      if (parts.length === 3) {
+        d = new Date(parts[2], parts[1] - 1, parts[0]);
       } else {
-        document.documentElement.lang = "ar";
-        document.documentElement.dir = "rtl";
-
-        document.getElementById("thankYouTitle").textContent = "شكراً لك!";
-        document.getElementById("madeWithLove").textContent = "صنع بكل حب 🎀";
-        document.getElementById("successMessage").textContent = "تم إرسال طلبك بنجاح.";
-        document.getElementById("paymentMessage").textContent = "يرجى إكمال عملية الدفع باستخدام BenefitPay – فوري+، ثم إرسال إشعار التحويل لنا عبر الإنستغرام.";
-        document.getElementById("paymentTitle").textContent = "تعليمات الدفع (BenefitPay – فوري+)";
-        
-        document.getElementById("paymentSteps").innerHTML = `
-          <li>صوّر رمز QR.</li>
-          <li>افتح تطبيق BenefitPay.</li>
-          <li>اختار فوري+ واضغط على مسح QR.</li>
-          <li>بعد فتح الكاميرا، اضغط أعلى اليمين لرفع صورة.</li>
-          <li>اختار صورة رمز QR من موقعنا وأكمل عملية الدفع.</li>
-          <li>أرسل عملية التحويل لنا عبر الإنستغرام لتأكيد طلبك.</li>
-        `;
-
-        document.getElementById("paymentNote").innerHTML = `<strong>ملاحظة:</strong> سنرسل لك موقع الاستلام بعد استلام عملية التحويل.`;
-        document.getElementById("instagramText").textContent = "تواصل معنا عبر الإنستغرام 🎀";
-        document.getElementById("invoiceTitle").textContent = "فاتورة الطلب 🎀";
-        document.getElementById("labelInvNo").textContent = "رقم الفاتورة:";
-        document.getElementById("labelDate").textContent = "التاريخ:";
-        document.getElementById("labelCustomer").textContent = "العميل:";
-        document.getElementById("thProduct").textContent = "المنتج";
-        document.getElementById("thQty").textContent = "الكمية";
-        document.getElementById("thPrice").textContent = "السعر";
-        document.getElementById("thTotal").textContent = "المجموع";
-        document.getElementById("labelGrandTotal").textContent = "المجموع الكلي";
-        document.getElementById("downloadPdfBtn").textContent = "تحميل الفاتورة PDF";
-        document.getElementById("sharePdfBtn").textContent = "مشاركة الفاتورة PDF";
+        d = new Date(String(raw));
       }
+    }
+    if (!d || isNaN(d.getTime())) return raw;
 
-      loadInvoice();
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+
+    return `${day}/${month}/${year}`;
+  }
+
+  function renderItemsAndComputeTotal(items) {
+    const tbody = document.getElementById('invoiceItems');
+    if (!tbody) return 0;
+    tbody.innerHTML = '';
+
+    let grandTotal = 0;
+
+    items.forEach(function (item) {
+      const name = item.name || item.productName || item.title || item.product || '-';
+      const person = item.personName ? ` (${item.personName})` : '';
+      const qty = Number(item.quantity ?? item.qty ?? 1);
+      const price = Number(item.price ?? item.unitPrice ?? 0);
+      const itemTotal = item.total !== undefined ? Number(item.total) : (price * qty);
+
+      grandTotal += itemTotal;
+
+      const row = document.createElement('tr');
+
+      const productCell = document.createElement('td');
+      productCell.innerHTML = `<bdi class="bdi-safe">${name}${person}</bdi>`;
+      row.appendChild(productCell);
+
+      const quantityCell = document.createElement('td');
+      quantityCell.textContent = qty;
+      row.appendChild(quantityCell);
+
+      const priceCell = document.createElement('td');
+      priceCell.innerHTML = `<bdi class="bdi-safe">${price.toFixed(2)} BD</bdi>`;
+      row.appendChild(priceCell);
+
+      const totalCell = document.createElement('td');
+      totalCell.innerHTML = `<bdi class="bdi-safe">${itemTotal.toFixed(2)} BD</bdi>`;
+      row.appendChild(totalCell);
+
+      tbody.appendChild(row);
     });
-  </script>
+
+    document.getElementById('invoiceTotal').innerHTML = `<bdi class="bdi-safe">${grandTotal.toFixed(2)} BD</bdi>`;
+    return grandTotal;
+  }
+
+  function loadInvoiceData() {
+    const savedInvoice = localStorage.getItem('shoshoInvoice');
+    if (!savedInvoice) return;
+
+    let invoice;
+    try {
+      invoice = JSON.parse(savedInvoice);
+    } catch (err) {
+      console.error('Invoice JSON parse error', err);
+      return;
+    }
+
+    if (!invoice || !invoice.items || !Array.isArray(invoice.items)) return;
+
+    const invoiceSection = document.getElementById('invoiceSection');
+    if (invoiceSection) invoiceSection.style.display = 'block';
+
+    document.getElementById('invoiceNumber').textContent = invoice.invoiceNumber || invoice.id || '-';
+
+    const rawDate = invoice.date ?? invoice.createdAt ?? invoice.timestamp;
+    document.getElementById('invoiceDate').textContent = formatDateSafe(rawDate);
+
+    const customerName =
+      invoice.customerName ||
+      invoice.customer?.name ||
+      invoice.user?.fullName ||
+      invoice.billingName ||
+      invoice.name ||
+      '-';
+    document.getElementById('invoiceCustomer').textContent = customerName;
+
+    renderItemsAndComputeTotal(invoice.items);
+  }
+
+  function applyLanguage() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlLang = urlParams.get('lang');
+    
+    const savedLang = urlLang 
+                   || localStorage.getItem("siteLanguage") 
+                   || localStorage.getItem("lang") 
+                   || localStorage.getItem("language")
+                   || localStorage.getItem("userLanguage");
+
+    const isEnglish = savedLang && savedLang.toLowerCase().startsWith("en");
+
+    if (isEnglish) {
+      document.documentElement.lang = "en";
+      
+      document.getElementById("thankYouTitle").textContent = "Thank You!";
+      document.getElementById("madeWithLove").textContent = "Made with love 🎀";
+      document.getElementById("successMessage").textContent = "Your order has been submitted successfully.";
+      document.getElementById("paymentMessage").textContent = "Please complete the payment using BenefitPay – Fawri+, then send the transaction confirmation to us through Instagram.";
+      document.getElementById("paymentTitle").textContent = "Payment Instructions (BenefitPay – Fawri+)";
+      
+      document.getElementById("paymentSteps").innerHTML = `
+        <li>Capture the QR code.</li>
+        <li>Open your BenefitPay app.</li>
+        <li>Choose Fawri+ and click on “Scan QR”.</li>
+        <li>After opening the camera, click on the top right to upload a photo.</li>
+        <li>Select the QR code you captured from our website and complete the payment.</li>
+        <li>Kindly share the transaction with us on Instagram to confirm your order.</li>
+      `;
+
+      document.getElementById("paymentNote").innerHTML = `<strong>Note:</strong> We will share the pickup location with you after receiving the payment transaction.`;
+      document.getElementById("instagramText").textContent = "Contact us on Instagram 🎀";
+      document.getElementById("invoiceTitle").textContent = "Your Invoice 🎀";
+      document.getElementById("labelInvNo").textContent = "Invoice No:";
+      document.getElementById("labelDate").textContent = "Date:";
+      document.getElementById("labelCustomer").textContent = "Customer:";
+      document.getElementById("thProduct").textContent = "Product";
+      document.getElementById("thQty").textContent = "Qty";
+      document.getElementById("thPrice").textContent = "Price";
+      document.getElementById("thTotal").textContent = "Total";
+      document.getElementById("labelGrandTotal").textContent = "Grand Total";
+      document.getElementById("downloadPdfBtn").textContent = "Download PDF";
+      document.getElementById("sharePdfBtn").textContent = "Share PDF";
+    } else {
+      document.documentElement.lang = "ar";
+      
+      document.getElementById("thankYouTitle").textContent = "شكراً لك!";
+      document.getElementById("madeWithLove").textContent = "صنع بكل حب 🎀";
+      document.getElementById("successMessage").textContent = "تم إرسال طلبك بنجاح.";
+      document.getElementById("paymentMessage").textContent = "يرجى إكمال عملية الدفع باستخدام BenefitPay – فوري+، ثم إرسال إشعار التحويل لنا عبر الإنستغرام.";
+      document.getElementById("paymentTitle").textContent = "تعليمات الدفع (BenefitPay – فوري+)";
+      
+      document.getElementById("paymentSteps").innerHTML = `
+        <li>صوّر رمز QR.</li>
+        <li>افتح تطبيق BenefitPay.</li>
+        <li>اختار فوري+ واضغط على مسح QR.</li>
+        <li>بعد فتح الكاميرا، اضغط أعلى اليمين لرفع صورة.</li>
+        <li>اختار صورة رمز QR من موقعنا وأكمل عملية الدفع.</li>
+        <li>أرسل عملية التحويل لنا عبر الإنستغرام لتأكيد طلبك.</li>
+      `;
+
+      document.getElementById("paymentNote").innerHTML = `<strong>ملاحظة:</strong> سنرسل لك موقع الاستلام بعد استلام عملية التحويل.`;
+      document.getElementById("instagramText").textContent = "تواصل معنا عبر الإنستغرام 🎀";
+      document.getElementById("invoiceTitle").textContent = "فاتورة الطلب 🎀";
+      document.getElementById("labelInvNo").textContent = "رقم الفاتورة:";
+      document.getElementById("labelDate").textContent = "التاريخ:";
+      document.getElementById("labelCustomer").textContent = "العميل:";
+      document.getElementById("thProduct").textContent = "المنتج";
+      document.getElementById("thQty").textContent = "الكمية";
+      document.getElementById("thPrice").textContent = "السعر";
+      document.getElementById("thTotal").textContent = "المجموع";
+      document.getElementById("labelGrandTotal").textContent = "المجموع الكلي";
+      document.getElementById("downloadPdfBtn").textContent = "تحميل الفاتورة PDF";
+      document.getElementById("sharePdfBtn").textContent = "مشاركة الفاتورة PDF";
+    }
+  }
+
+  function getInvoicePDFOptions() {
+    return {
+      margin: [10, 10, 10, 10],
+      filename: (document.getElementById('invoiceNumber')?.textContent || 'ShoSho-Matcha-Invoice') + '.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#ffffff',
+        scrollY: 0,
+        scrollX: 0
+      },
+      pagebreak: { mode: ['css', 'legacy'] },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+  }
+
+  async function createInvoicePDF() {
+    const invoiceSection = document.getElementById('invoiceSection');
+    if (!invoiceSection) throw new Error('Invoice section not found');
+
+    const buttons = invoiceSection.querySelector('.invoice-buttons');
+    if (buttons) buttons.style.display = 'none';
+
+    try {
+      const opt = getInvoicePDFOptions();
+      return await html2pdf().set(opt).from(invoiceSection).outputPdf('blob');
+    } finally {
+      if (buttons) buttons.style.display = 'flex';
+    }
+  }
+
+  async function downloadInvoicePDF() {
+    const btn = document.getElementById('downloadPdfBtn');
+    if (btn) btn.disabled = true;
+
+    try {
+      const pdfBlob = await createInvoicePDF();
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+      const link = document.createElement('a');
+      link.href = pdfUrl;
+      link.download = (document.getElementById('invoiceNumber')?.textContent || 'ShoSho-Matcha-Invoice') + '.pdf';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(pdfUrl), 1000);
+    } catch (error) {
+      console.error('PDF Download Error:', error);
+      alert(document.documentElement.lang === 'ar' ? 'حدث خطأ أثناء تحميل الفاتورة' : 'Error downloading PDF');
+    } finally {
+      if (btn) btn.disabled = false;
+    }
+  }
+
+  async function shareInvoicePDF() {
+    const btn = document.getElementById('sharePdfBtn');
+    if (btn) btn.disabled = true;
+
+    try {
+      const pdfBlob = await createInvoicePDF();
+      const fileName = (document.getElementById('invoiceNumber')?.textContent || 'ShoSho-Matcha-Invoice') + '.pdf';
+      const pdfFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
+
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+        await navigator.share({
+          title: 'ShoSho Matcha Invoice',
+          text: 'Your order invoice from ShoSho Matcha',
+          files: [pdfFile]
+        });
+      } else {
+        downloadInvoicePDF();
+      }
+    } catch (error) {
+      console.error('PDF Share Error:', error);
+      alert(document.documentElement.lang === 'ar' ? 'حدث خطأ أثناء مشاركة الفاتورة' : 'Error sharing PDF');
+    } finally {
+      if (btn) btn.disabled = false;
+    }
+  }
+
+  // تنفيذ العمليات بالترتيب الصحيح عند تحميل الصفحة
+  document.addEventListener('DOMContentLoaded', function () {
+    loadInvoiceData(); // 1. جلب بيانات الفاتورة أولاً
+    applyLanguage();    // 2. تطبيق اللغة والترجمة حسب الاختيار
+  });
+</script>
 </body>
 </html>
