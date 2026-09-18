@@ -578,14 +578,12 @@
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-      // فحص شامل للغة المحددة في الصفحة أو التخزين
-      const savedLang = localStorage.getItem("siteLanguage") || 
-                        localStorage.getItem("lang") || 
-                        localStorage.getItem("language") || 
-                        document.documentElement.lang || 
-                        "en";
+      // 1. الفحص الدقيق للغة من وسوم الصفحة والـ localStorage
+      const htmlLang = document.documentElement.lang || "";
+      const savedLang = localStorage.getItem("siteLanguage") || localStorage.getItem("lang") || localStorage.getItem("language");
       
-      const isArabic = savedLang.toLowerCase().startsWith("ar");
+      const currentLang = htmlLang || savedLang || "en";
+      const isArabic = currentLang.toLowerCase().startsWith("ar");
 
       if (isArabic) {
         document.documentElement.lang = "ar";
