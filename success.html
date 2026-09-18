@@ -395,12 +395,12 @@
       }
       if (!d || isNaN(d.getTime())) return raw;
 
-      return d.toLocaleDateString('ar-BH', {
-        numberingSystem: 'latn',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      });
+      // تنسيق التاريخ بالأرقام فقط (DD/MM/YYYY)
+      const day = String(d.getDate()).padStart(2, '0');
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const year = d.getFullYear();
+
+      return `${day}/${month}/${year}`;
     }
 
     function renderItemsAndComputeTotal(items) {
