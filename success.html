@@ -32,14 +32,29 @@
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
     }
 
+    .ribbon-icon {
+      font-size: 42px;
+      margin-bottom: 5px;
+      display: block;
+    }
+
     h1 {
       color: #d94f8b;
+      margin-top: 5px;
       margin-bottom: 15px;
+      font-size: 26px;
     }
 
     p {
       color: #7a5a48;
       line-height: 1.6;
+    }
+
+    .made-with-love {
+      font-size: 14px;
+      color: #d94f8b;
+      font-weight: bold;
+      margin-bottom: 20px;
     }
 
     .payment-instructions {
@@ -94,7 +109,7 @@
       width: 220px;
       max-width: 80%;
       height: auto;
-      margin: 5px auto 18px;
+      margin: 10px auto 18px;
       border-radius: 14px;
       border: 1px solid #ead8ce;
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
@@ -247,7 +262,10 @@
 
 <body>
   <div class="box">
+    <span class="ribbon-icon">🎀</span>
     <h1 id="thankYouTitle">Thank You!</h1>
+    
+    <div class="made-with-love" id="madeWithLove">Made with love 🎀</div>
 
     <p id="successMessage">
       Your order has been submitted successfully.
@@ -298,11 +316,11 @@
       target="_blank"
       rel="noopener noreferrer"
     >
-      <span id="instagramText">Contact us on Instagram</span>
+      <span id="instagramText">Contact us on Instagram 🎀</span>
     </a>
 
     <div id="invoiceSection" class="invoice-section">
-      <h2 id="invoiceTitle">Your Invoice</h2>
+      <h2 id="invoiceTitle">Your Invoice 🎀</h2>
 
       <div class="invoice-info">
         <p>
@@ -560,7 +578,13 @@
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-      const savedLang = localStorage.getItem("siteLanguage") || localStorage.getItem("lang") || localStorage.getItem("language") || "en";
+      // فحص شامل للغة المحددة في الصفحة أو التخزين
+      const savedLang = localStorage.getItem("siteLanguage") || 
+                        localStorage.getItem("lang") || 
+                        localStorage.getItem("language") || 
+                        document.documentElement.lang || 
+                        "en";
+      
       const isArabic = savedLang.toLowerCase().startsWith("ar");
 
       if (isArabic) {
@@ -568,6 +592,7 @@
         document.documentElement.dir = "rtl";
 
         document.getElementById("thankYouTitle").textContent = "شكراً لك!";
+        document.getElementById("madeWithLove").textContent = "صنع بكل حب 🎀";
         document.getElementById("successMessage").textContent = "تم إرسال طلبك بنجاح.";
         document.getElementById("paymentMessage").textContent = "يرجى إكمال عملية الدفع باستخدام BenefitPay – فوري+، ثم إرسال إشعار التحويل لنا عبر الإنستغرام.";
         document.getElementById("paymentTitle").textContent = "تعليمات الدفع (BenefitPay – فوري+)";
@@ -582,8 +607,8 @@
         `;
 
         document.getElementById("paymentNote").innerHTML = `<strong>ملاحظة:</strong> سنرسل لك موقع الاستلام بعد استلام عملية التحويل.`;
-        document.getElementById("instagramText").textContent = "تواصل معنا عبر الإنستغرام";
-        document.getElementById("invoiceTitle").textContent = "فاتورة الطلب";
+        document.getElementById("instagramText").textContent = "تواصل معنا عبر الإنستغرام 🎀";
+        document.getElementById("invoiceTitle").textContent = "فاتورة الطلب 🎀";
         document.getElementById("labelInvNo").textContent = "رقم الفاتورة:";
         document.getElementById("labelDate").textContent = "التاريخ:";
         document.getElementById("labelCustomer").textContent = "العميل:";
@@ -597,6 +622,35 @@
       } else {
         document.documentElement.lang = "en";
         document.documentElement.dir = "ltr";
+
+        document.getElementById("thankYouTitle").textContent = "Thank You!";
+        document.getElementById("madeWithLove").textContent = "Made with love 🎀";
+        document.getElementById("successMessage").textContent = "Your order has been submitted successfully.";
+        document.getElementById("paymentMessage").textContent = "Please complete the payment using BenefitPay – Fawri+, then send the transaction confirmation to us through Instagram.";
+        document.getElementById("paymentTitle").textContent = "Payment Instructions (BenefitPay – Fawri+)";
+        
+        document.getElementById("paymentSteps").innerHTML = `
+          <li>Capture the QR code.</li>
+          <li>Open your BenefitPay app.</li>
+          <li>Choose Fawri+ and click on “Scan QR”.</li>
+          <li>After opening the camera, click on the top right to upload a photo.</li>
+          <li>Select the QR code you captured from our website and complete the payment.</li>
+          <li>Kindly share the transaction with us on Instagram to confirm your order.</li>
+        `;
+
+        document.getElementById("paymentNote").innerHTML = `<strong>Note:</strong> We will share the pickup location with you after receiving the payment transaction.`;
+        document.getElementById("instagramText").textContent = "Contact us on Instagram 🎀";
+        document.getElementById("invoiceTitle").textContent = "Your Invoice 🎀";
+        document.getElementById("labelInvNo").textContent = "Invoice No:";
+        document.getElementById("labelDate").textContent = "Date:";
+        document.getElementById("labelCustomer").textContent = "Customer:";
+        document.getElementById("thProduct").textContent = "Product";
+        document.getElementById("thQty").textContent = "Qty";
+        document.getElementById("thPrice").textContent = "Price";
+        document.getElementById("thTotal").textContent = "Total";
+        document.getElementById("labelGrandTotal").textContent = "Grand Total";
+        document.getElementById("downloadPdfBtn").textContent = "Download PDF";
+        document.getElementById("sharePdfBtn").textContent = "Share PDF";
       }
 
       loadInvoice();
